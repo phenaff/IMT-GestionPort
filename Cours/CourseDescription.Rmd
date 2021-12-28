@@ -4,8 +4,6 @@ output:
     keep_tex: true
     fig_caption: yes
     latex_engine: pdflatex
-    includes:
-      in_header: preamble.tex
 geometry: margin=1in
 
 bibliography: ../../library.bib
@@ -117,7 +115,7 @@ On considère ici le travail d'Harry Markowitz, qui établit les fondements de l
 Documents à lire avant le cours:
 
 - Article de Markowitz (1952)
-- Note de cours
+- Note de cours "Quantitative Portfolio Management"
 - Chapitre 5 de Pfaff (2016)
 
 Documents:
