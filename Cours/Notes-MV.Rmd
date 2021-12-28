@@ -4,8 +4,6 @@ output:
     keep_tex: true
     fig_caption: yes
     latex_engine: pdflatex
-    includes:
-      in_header: preamble.tex
 geometry: margin=1in
 
 bibliography: ../../library.bib
@@ -13,7 +11,7 @@ csl: ../../apa.csl
 
 title: "Markowitz & Treynor-Black"
 author: Patrick Hénaff
-date: "Feb 2021"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 email: "pa.henaff@gmail.com"
 
 fontfamily: mathpazo

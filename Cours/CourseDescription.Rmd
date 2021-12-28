@@ -115,13 +115,12 @@ On considère ici le travail d'Harry Markowitz, qui établit les fondements de l
 Documents à lire avant le cours:
 
 - Article de Markowitz (1952)
-- Note de cours "Quantitative Portfolio Management"
 - Chapitre 5 de Pfaff (2016)
+- Note de cours "Markowitz & Treynor-Black"
 
 Documents:
 
 - slides-2.pdf
-- Notes-MV.pdf
 
 TP 2 (à rendre pour le `r as.Date("2022-02-15")+15`):
 
@@ -135,8 +134,9 @@ Le modèle MEDAF (CAPM) et son pendant empirique, le modèle de marché à un fa
 Documents à lire avant le cours:
 
 - Article de Treynor & Black (1973)
+- Note de cours "Markowitz & Treynor-Black"
 - Chapitre 5 de Pfaff (2016)
-- Notes sur les mesures de performance
+- Notes "MEDAF et mesures de performance"
 
 Documents:
 
