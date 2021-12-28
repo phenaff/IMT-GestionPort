@@ -1,7 +1,8 @@
 ---
 title: "Modèle Moyenne-Variance et Extensions"
 author: "P. Hénaff"
-date: "2/2021"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+
 output:
   beamer_presentation:
     colortheme: dolphin
@@ -28,7 +29,7 @@ header-includes:
   - \usepackage{xcolor}
 
   
-bibliography: ../library.bib
+bibliography: ../../library.bib
 ---
 
 ```{r setup, include=FALSE}
