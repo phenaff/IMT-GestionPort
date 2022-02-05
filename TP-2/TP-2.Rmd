@@ -3,7 +3,7 @@ title: "Gestion de Portefeuille"
 subtitle: "TP-2: Droite de Marchés des Capitaux"
 author: Patrick Hénaff
 date: "Février-Mars 2021"
-output: 
+output:
   pdf_document:
     keep_tex: true
     fig_caption: yes
@@ -13,8 +13,8 @@ geometry: margin=1in
 header-includes:
   - \usepackage[utf8]{inputenc}
 
-bibliography: ../library.bib
-csl: ../apa.csl
+bibliography: ../../library.bib
+csl: ../../apa.csl
 ---
 
 ```{r setup, include=FALSE}
@@ -61,7 +61,7 @@ kable(table.Stats(daily.ret), "latex", booktabs=T) %>% kable_styling(latex_optio
 ## Rendement annuel moyen:
 
 ```{r, echo=TRUE}
-kable(252*100*colMeans(daily.ret), "latex", booktabs=T, digits=1, col.names=c("Rendement (%)"), 
+kable(252*100*colMeans(daily.ret), "latex", booktabs=T, digits=1, col.names=c("Rendement (%)"),
       caption="Rendement annuel moyen")
 ```
 
@@ -80,7 +80,7 @@ kable_styling(latex_options="scale_down")
 + A partir des calculs présentés en cours, mettre en oeuvre une méthode numérique
   pour déterminer le portefeuille tangent quand les poids des actifs risqués sont contraints à être positifs: $w_i >= 0$.
 
-+ Même calcul en ajoutant des contraintes supplémentaires qui vous semblent pertinentes 
++ Même calcul en ajoutant des contraintes supplémentaires qui vous semblent pertinentes
 (ex: pas plus de 20\% de l'actif risqué alloué à un seul titre, etc.)
 
 
