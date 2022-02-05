@@ -27,8 +27,8 @@ header-includes:
   - \usepackage{makecell}
   - \usepackage{xcolor}
 
-  
-bibliography: ../library.bib
+
+bibliography: ../../library.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -270,14 +270,14 @@ Est-ce que le gérant apporte une valeur ajoutée, ou bien est-il chanceux?
 
 + Tirer un échantillon de $R(t)$ et $R_M(t)$ sous $H_0$
 + Estimer $\alpha$ par regression, en utilisant \texttt{apply}
-+ Calculer la distribution empirique du ratio 
++ Calculer la distribution empirique du ratio
 $$
 \frac{\hat{\alpha_i}}{\sigma(\hat{\alpha_i})} \sim  \mbox{t-stat}
 $$
 
 ## Black-Litterman (1)
 
-+ Par défaut: Accepter les espérances de rendement implicites dans le 
++ Par défaut: Accepter les espérances de rendement implicites dans le
 portefeuille de marché, et investir dans ce portefeuille.
 + Exprimer des "vues" sur l'espérance de rendement de portefeuilles quelconques
 + Utiliser ces "vues"pour modifier les espérances de rendement et la structure de covariance des actifs.
@@ -288,10 +288,10 @@ View: IBM et Dell surperforme MS.
 
 \tiny
 ```{r, echo=TRUE, message=FALSE}
-pickMatrix <- matrix(c(1/2, -1, 1/2, rep(0, 3)), 
+pickMatrix <- matrix(c(1/2, -1, 1/2, rep(0, 3)),
                      nrow = 1, ncol = 6 )
 views <- BLViews(P = pickMatrix, q = 0.06,
-                 confidences =  100, 
+                 confidences =  100,
                  assetNames = colnames(monthlyReturns))
 views
 ```
@@ -327,7 +327,7 @@ views
 \tiny
 ```{r, echo=TRUE}
 marketPosterior <- BLPosterior(as.matrix(monthlyReturns), views,
-                               tau = 1/2, 
+                               tau = 1/2,
                                marketIndex = as.matrix(sp500Returns),
                                riskFree = as.matrix(US13wTB))
 marketPosterior
@@ -340,7 +340,7 @@ Portefeuille Tangent:
 
 \tiny
 ```{r, echo=TRUE}
-optPorts <- optimalPortfolios.fPort(marketPosterior, 
+optPorts <- optimalPortfolios.fPort(marketPosterior,
             optimizer = "tangencyPortfolio")
 ```
 \normalsize
@@ -431,7 +431,7 @@ rpp_naive <- riskParityPortfolio(Sigma, formulation = "diag")
 rpp_vanilla <- riskParityPortfolio(Sigma)
 rpp_mu <- riskParityPortfolio(Sigma, formulation = "rc-over-b-double-index",
                               mu = mu, lmd_mu = 1e-3,
-                              w_ub = 0.16)     
+                              w_ub = 0.16)
 
 w_all <- cbind("EWP"           = rep(1/nrow(Sigma), nrow(Sigma)),
                "RPP (naive)"   = rpp_naive$w)
@@ -476,7 +476,7 @@ knitr::include_graphics("Selection_026.png")
 + IR: $\alpha_P / \sigma(e_P)$
 
 
-## Diagramme Rendement / Risque 
+## Diagramme Rendement / Risque
 
 ```{r rdt-risque, echo=FALSE, out.width = '100%', fig.height=4.5, fig.cap="Couple Rdt/Risque"}
 knitr::include_graphics("Selection_028.png")
@@ -516,7 +516,7 @@ $$
 \begin{aligned}
 & w_{Pi} r_{Pi} - w_{Bi} r_{Bi}  = \\
 & (w_{Pi} - w_{Bi}) r_{Bi}  \ \ \ \ \mbox{allocation} \\
-+ & w_{Pi}(r_{Pi} - r_{Bi}) \ \ \ \ \mbox{selection} 
++ & w_{Pi}(r_{Pi} - r_{Bi}) \ \ \ \ \mbox{selection}
 \end{aligned}
 $$
 
