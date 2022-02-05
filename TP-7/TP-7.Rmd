@@ -2,8 +2,8 @@
 title: "Gestion de Portefeuille"
 subtitle: "TP-7: Simulation d'une gestion selon un Budget Risque"
 author: Patrick Hénaff
-date: "Février-Mars 2020"
-output: 
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
   pdf_document:
     keep_tex: true
     fig_caption: yes
@@ -119,7 +119,7 @@ tickers <- names(weekly.price)
 
 
 ```{r, eval=TRUE, echo=TRUE, warning=FALSE}
-kable(table.Stats(weekly.price), "latex", booktabs=T, caption="Univers des titres") %>% 
+kable(table.Stats(weekly.price), "latex", booktabs=T, caption="Univers des titres") %>%
   kable_styling(latex_options=c("scale_down", "HOLD_position"))
 ```
 

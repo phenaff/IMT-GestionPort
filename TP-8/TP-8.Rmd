@@ -2,8 +2,8 @@
 title: "Gestion de Portefeuille"
 subtitle: "TP-8: Gestion Obligataire"
 author: Patrick Hénaff
-date: "Février-Mars 2020"
-output: 
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
   pdf_document:
     keep_tex: true
     fig_caption: yes
@@ -46,7 +46,7 @@ source(file.path(get.src.folder(), 'FileUtils.R'))
 
 L'objet de ce TP est de construire un modèle de gestion obligataire qui combine les méthodes d'adossement flux à flux et d'immunisation.
 
-La méthode d'adossement flux à flux est adaptée aux échéances court-terme, car elle évite de faire des transactions trop nombreuses. Par contre, elle manque de flexibilité, et se révèle être une solution chère. Pour un horizon plus lointain, on lui préfère donc l'immunisation. 
+La méthode d'adossement flux à flux est adaptée aux échéances court-terme, car elle évite de faire des transactions trop nombreuses. Par contre, elle manque de flexibilité, et se révèle être une solution chère. Pour un horizon plus lointain, on lui préfère donc l'immunisation.
 
 # Données
 
@@ -55,12 +55,12 @@ Les données sont simulées pour les besoins du TP.
 ## Obligations
 
 ```{r, echo=T}
-df.o <- read.csv("obligations.csv", 
+df.o <- read.csv("obligations.csv",
                            colClasses=c("character", "character", NA))
 df.o$dtE <- as.Date(df.o$dtE, format("%m/%d/%Y"))
 df.o$dtM <- as.Date(df.o$dtM, format("%m/%d/%Y"))
 df.o$name <- sapply(seq_along(df.o$dtE), function(x) paste('Bond-',x, sep=''))
-kable(df.o[1:10,], 
+kable(df.o[1:10,],
       col.names=c("Dt Emission", "Dt Maturité", "Coupon", "Name"),
       format="latex", booktabs=T)%>%
   kable_styling(position="center")
@@ -73,7 +73,7 @@ kable(df.o[1:10,],
 dt.mat <- seq(ymd('2021-01-01'), ymd('2040-01-01'), by="year")
 tx <- 1 + log(seq_along(dt.mat))
 df.cdt <- data.frame(mat=dt.mat, tx=tx)
-plot(dt.mat, tx, type='l', lwd=2, col='red', 
+plot(dt.mat, tx, type='l', lwd=2, col='red',
      main='Courbe des taux actuariels',
      xlab="Maturité", ylab="taux")
 ```
@@ -94,11 +94,11 @@ Soit un passif de 10,000,000\euro\ payable le 2/1/2025. Construisez un portefeui
 On considère maintenant un passif composé de plusieurs flux, comme indiqué dans le tableau ci-dessous:
 
 ```{r}
-df.flow <- data.frame(dt=as.Date(c("2021-10-01", 
+df.flow <- data.frame(dt=as.Date(c("2021-10-01",
                      "2022-04-01",
-                     "2022-10-01", 
+                     "2022-10-01",
                      "2023-04-01",
-                     "2023-10-01", 
+                     "2023-10-01",
                      "2024-04-01",
                      "2024-10-01")),
 vx=as.numeric(c(rep(1000000,6), 10000000)))

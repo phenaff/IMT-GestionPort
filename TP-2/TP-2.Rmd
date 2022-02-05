@@ -2,7 +2,7 @@
 title: "Gestion de Portefeuille"
 subtitle: "TP-2: Droite de Marchés des Capitaux"
 author: Patrick Hénaff
-date: "Février-Mars 2021"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 output:
   pdf_document:
     keep_tex: true

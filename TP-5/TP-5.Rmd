@@ -2,8 +2,8 @@
 title: "Gestion de Portefeuille"
 subtitle: "TP-5; Modèle de Black-Litterman"
 author: Patrick Hénaff
-date: "Février-Mars 2021"
-output: 
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
   pdf_document:
     keep_tex: true
     fig_caption: yes
@@ -42,9 +42,9 @@ library(broom)
 
 ```
 
-* Effectuer une lecture attentive de l'article de He et Litterman. 
+* Effectuer une lecture attentive de l'article de He et Litterman.
 
-* A partir de la note de cours, reproduire les autres exemples de l'article, 
+* A partir de la note de cours, reproduire les autres exemples de l'article,
 comparer les résultats avec ceux obtenus avec le package BLCOP.
 
 * Comparer avec une allocation MV classique.

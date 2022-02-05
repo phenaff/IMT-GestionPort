@@ -2,8 +2,8 @@
 title: "Gestion de Portefeuille"
 subtitle: "TP-4: Impact de la matrice de covariance dans le modèle MV"
 author: Patrick Hénaff
-date: "Février-Mars 2021"
-output: 
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
   pdf_document:
     keep_tex: true
     fig_caption: yes
@@ -83,13 +83,13 @@ rownames(mo) <- symbols
 kbl(mo, "latex", caption="Summary Statistics", booktabs=T) %>%
   kable_styling(latex_options=c("stripped", "HOLD_position"))
 ```
-\ 
+\
 
 ## Etude de la matrice de covariance
 
 On se propose d'étudier la matrice de covariance à l'aide de la formule de Stevens pour la matrice d'information $\mathcal{I} = \Sigma^{-1}$.
 
-- Pour chaque actif, estimer le modèle 
+- Pour chaque actif, estimer le modèle
 
 $$
 R_{i,t} = \beta_0 + \beta_i^T R_t^{(-i)} + \epsilon_{i,t}

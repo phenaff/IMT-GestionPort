@@ -2,8 +2,8 @@
 title: "Gestion de Portefeuille"
 subtitle: "TP-3: Modèle à un facteur et modèle de Treynor Black"
 author: Patrick Hénaff
-date: "Février-Mars 2020"
-output: 
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
   pdf_document:
     keep_tex: true
     fig_caption: yes
@@ -58,7 +58,7 @@ kable_styling(latex_options=c("scale_down", "HOLD_position"))
 ## Rendement moyen mensuel
 
 ```{r, echo=TRUE}
-kbl(colMeans(monthly.ret), format="latex", booktabs=T, 
+kbl(colMeans(monthly.ret), format="latex", booktabs=T,
     col.names=c("Rendement"), caption="Rendement moyen mensuel") %>%
     kable_styling(latex_options="HOLD_position")
 ```
@@ -87,8 +87,8 @@ $$
 R_i(t) - R_f(t) = \alpha + \beta (R_M(t) - R_f(t)) + \epsilon(t)
 $$
 en utilisant la fonction \texttt{lm}.
-- Placer chaque titre sur un diagramme rendement/beta et calculer par regression la droite de marché des titres risqués. 
-- En déduire les titres qui, selon ce modèle, *semblent* chers et ceux qui semblent sous-évalués. 
+- Placer chaque titre sur un diagramme rendement/beta et calculer par regression la droite de marché des titres risqués.
+- En déduire les titres qui, selon ce modèle, *semblent* chers et ceux qui semblent sous-évalués.
 
 Est-ce que ces mesures de cherté relative vous semble correctes? Essayez de mesurer la robustesse de ce calcul en estimant le modèles sur des sous-intervalles de temps.
 
@@ -101,7 +101,7 @@ Le modèle de Treynor-Black a pour objectif d'exploiter les informations calcul�
 
 ## Selection des titres à inclure dans le portefeuille actif.
 
-C'est l'étape délicate de la méthode de Treynor-Black. A partir de l'évaluation du modèle à un facteur, déterminez quels titres méritent de figurer dans le portefeuille actif. En théorie, on a envie d'acheter les titres sous-cotés ($\alpha_i > 0$) mais cette anomalie n'est peut être qu'apparente! Il faut également apprécier la qualité de l'estimation statistique. 
+C'est l'étape délicate de la méthode de Treynor-Black. A partir de l'évaluation du modèle à un facteur, déterminez quels titres méritent de figurer dans le portefeuille actif. En théorie, on a envie d'acheter les titres sous-cotés ($\alpha_i > 0$) mais cette anomalie n'est peut être qu'apparente! Il faut également apprécier la qualité de l'estimation statistique.
 
 En testant diverses combinaisons de titres à mettre dans le portefeuille actif, vous pourrez mesurer la sensibilité de modèle de Treynor-Black aux données.
 
