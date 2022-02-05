@@ -1,7 +1,7 @@
 ---
 title: "Modèles de Black-Litterman"
 author: "P. Hénaff"
-date: "3/2021"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 output:
   beamer_presentation:
     colortheme: dolphin
@@ -27,7 +27,7 @@ header-includes:
   - \usepackage{makecell}
   - \usepackage{xcolor}
 
-  
+
 bibliography: ../../library.bib
 ---
 
@@ -86,7 +86,7 @@ knitr::include_graphics("capital-market-line.pdf")
 
 ## Black-Litterman (1)
 
-+ Par défaut: Accepter les espérances de rendement implicites dans le 
++ Par défaut: Accepter les espérances de rendement implicites dans le
 portefeuille de marché, et investir dans ce portefeuille.
 + Exprimer des "vues" sur l'espérance de rendement de portefeuilles quelconques
 + Utiliser ces "vues"pour modifier les espérances de rendement et la structure de covariance des actifs.
@@ -131,7 +131,7 @@ $$
 P \mu = Q + \epsilon^{(v)}
 $$
 
-avec 
+avec
 $$
 \epsilon^{(v)} \sim \mathcal{N}(0, \Omega)
 $$
@@ -175,10 +175,10 @@ Rendement de (1/2 IBM - MSFT + 1/2 DELL) = 6% + terme d'erreur
 \tiny
 ```{r, echo=TRUE, message=FALSE}
 sd <- .02
-pickMatrix <- matrix(c(1/2, -1, 1/2, rep(0, 3)), 
+pickMatrix <- matrix(c(1/2, -1, 1/2, rep(0, 3)),
                      nrow = 1, ncol = 6 )
 views <- BLViews(P = pickMatrix, q = 0.06,
-                 confidences =  1/sd, 
+                 confidences =  1/sd,
                  assetNames = colnames(monthlyReturns))
 views
 ```
@@ -213,7 +213,7 @@ views
 \tiny
 ```{r, echo=TRUE}
 marketPosterior <- BLPosterior(as.matrix(monthlyReturns), views,
-                               tau = 1/2, 
+                               tau = 1/2,
                                marketIndex = as.matrix(sp500Returns),
                                riskFree = as.matrix(US13wTB))
 marketPosterior
@@ -226,7 +226,7 @@ Portefeuille Tangent:
 
 \tiny
 ```{r, echo=TRUE}
-optPorts <- optimalPortfolios.fPort(marketPosterior, 
+optPorts <- optimalPortfolios.fPort(marketPosterior,
             optimizer = "tangencyPortfolio")
 ```
 \normalsize

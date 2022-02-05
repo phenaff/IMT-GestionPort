@@ -1,8 +1,7 @@
 ---
 title: "Black-Litterman"
-subtitle: "The intuition behind Black-Litterman model portfolios"
-date: "Février-Mars 2020"
-output: 
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
   pdf_document:
     keep_tex: true
     fig_caption: yes
@@ -77,7 +76,7 @@ Views are expressed as portfolios whose returns are independent random normal va
 $$
 P \mu = Q + \epsilon^{(v)}
 $$
-with 
+with
 $$
 \epsilon^{(v)} \sim \mathcal{N}(0, \Omega)
 $$
@@ -109,18 +108,18 @@ $$
 Combine two equations:
 $$
 \begin{bmatrix}
-\Pi \\ 
+\Pi \\
 Q
 \end{bmatrix}
- = 
+ =
 \begin{bmatrix}
-I \\ 
+I \\
 P
 \end{bmatrix}
-\mu + 
+\mu +
 \begin{bmatrix}
-\epsilon^{(e)} \\ 
-\epsilon^{(v)}  
+\epsilon^{(e)} \\
+\epsilon^{(v)}
 \end{bmatrix}
 $$
 Apply GLS:
@@ -134,14 +133,14 @@ Apply GLS:
 
 \def\X{
 \begin{bmatrix}
-I \\ 
+I \\
 P
 \end{bmatrix}
 }
 
 $$
 \mu^* = \left( \X^T \O^{-1} \X \right)^{-1}\X^T\O^{-1} \begin{bmatrix}
-\Pi \\ 
+\Pi \\
 Q
 \end{bmatrix}
 $$
@@ -187,12 +186,12 @@ Code freely adapted from https://github.com/systematicinvestor/SIT, but using th
 spl <- function (
   s,      # input string
   delim = ',' # delimiter
-) { 
+) {
   unlist(strsplit(s,delim))
 }
 ```
 
-Market data from He & Litterman: 
+Market data from He & Litterman:
 ```{r, echo=T}
  data =
 '1,0.4880,0.4780,0.5150,0.4390,0.5120,0.4910
@@ -202,10 +201,10 @@ Market data from He & Litterman:
  0.4390,0.3100,0.3550,0.3540,1,0.4050,0.3060
  0.5120,0.6080,0.7830,0.7770,0.4050,1,0.6520
  0.4910,0.7790,0.6680,0.6530,0.3060,0.6520,1'
-  
-  Corrmat = matrix( as.double(spl( gsub('\n', ',', data), ',')), 
+
+  Corrmat = matrix( as.double(spl( gsub('\n', ',', data), ',')),
                     nrow = length(spl(data, '\n')), byrow=TRUE)
-  
+
   stdevs = c(16.0, 20.3, 24.8, 27.1, 21.0,  20.0, 18.7)/100
   w.eq = c(1.6, 2.2, 5.2, 5.5, 11.6, 12.4, 61.5)/100
   # Prior covariance of returns

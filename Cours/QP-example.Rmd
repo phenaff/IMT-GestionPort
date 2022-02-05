@@ -1,7 +1,7 @@
 ---
 title: "QP Simple Example"
 author: "P. Hénaff"
-date: "2/2021"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 output: pdf_document
 
 header-includes:
@@ -57,7 +57,7 @@ $$
 \mbox{min}_x \ \  \begin{pmatrix}1\\2\\3\end{pmatrix}^T x + \frac{1}{2} x^T \Sigma \ x
 $$
 
-such that 
+such that
 $$
 \begin{aligned}
 \sum x_i & = 1 \\
@@ -68,7 +68,7 @@ $$
 
 The constraints are written in matrix notation, taking good care to separate the equality and inequality constraints:
 
-$$ 
+$$
 \begin{aligned}
 A_e^T x & = b_e \\
 A_n^T x & >= b_n
@@ -89,7 +89,7 @@ b_n[,1] <- c(-0.5, 0.8)
 $$
 \begin{split}
 A_e = `r write_matex2(A_e)` \ \  b_e =  1 \\
-A_n = `r write_matex2(A_n)` \ \ b_n = `r write_matex2(b_n)` 
+A_n = `r write_matex2(A_n)` \ \ b_n = `r write_matex2(b_n)`
 \end{split}
 $$
 
@@ -105,11 +105,11 @@ Sigma <- sigma %*% t(sigma) * Cor
 ```
 
 $$
-\sigma = `r write_matex2(sigma)` \ \ 
+\sigma = `r write_matex2(sigma)` \ \
 \Sigma = `r write_matex2(Sigma)`
 $$
 
-## QP 
+## QP
 
 The QP solver is invoked as follows. Note that the $A$ matrix must contain first the rows corresponding to the equality constraints, then the rows corresponding to the inequality constraints. Parameter \texttt{meq} indicates the number of equality constraints.
 
@@ -123,7 +123,7 @@ sol = solve.QP(Sigma, c(1,2,3), Amat, b, meq=1)
 ```{r, echo=T}
 library(kableExtra)
 names(sol$solution) <- seq(3)
-kable(sol$solution, "latex", booktabs=T, row.names = TRUE) %>% 
+kable(sol$solution, "latex", booktabs=T, row.names = TRUE) %>%
   kable_styling(full_width = F, position = "center")
 ```
 

@@ -1,7 +1,7 @@
 ---
 title: "SIM & Treynor-Black"
 author: "P. Hénaff"
-date: "2/2021"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 output:
   beamer_presentation:
     colortheme: dolphin
@@ -27,7 +27,7 @@ header-includes:
   - \usepackage{makecell}
   - \usepackage{xcolor}
 
-  
+
 bibliography: ../../library.bib
 ---
 
@@ -76,17 +76,17 @@ source(file.path(get.src.folder(), 'FileUtils.R'))
   $$
   R_i(t) = \alpha_i + \beta_i R_M(t) + e_i(t)
   $$
-  
+
 * Espérance de rendement
   $$
   E(R_i(t)) = \alpha_i + \beta_i E(R_M(t))
   $$
-  
+
 * Variance du rendement
   $$
   \sigma_i^2 = \beta_i^2 \sigma_M^2 + \sigma(e_i)^2
   $$
-  
+
 * Covariance des rendements
   $$
   \mbox{cov}(R_i, R_j) = \beta_i \beta_j \sigma_M^2
@@ -109,7 +109,7 @@ $$
   $$
   E(R_i(t)) = \alpha_i + \beta_i E(R_M(t))
   $$
-  
+
 * Variance du rendement
   $$
   \sigma_i^2 = \beta_i^2 \sigma_M^2 + \sigma(e_i)^2
@@ -166,7 +166,7 @@ plot(beta_roll)
 ## Calcul de $\alpha$
 
 ```{r, echo=TRUE}
-alpha_roll <- removeNA(rollapply(data=monthly.ret$MSFT, Rb=monthly.ret$SPY, 
+alpha_roll <- removeNA(rollapply(data=monthly.ret$MSFT, Rb=monthly.ret$SPY,
                                  FUN=CAPM.alpha, width=36, by=1))
 ```
 ```{r, fig.height=5}

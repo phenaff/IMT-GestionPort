@@ -1,7 +1,7 @@
 ---
 title: "Portefeuilles Obligataires"
 author: "P. Hénaff"
-date: "3/2021"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 output:
   beamer_presentation:
     colortheme: dolphin
@@ -27,7 +27,7 @@ header-includes:
   - \usepackage{makecell}
   - \usepackage{xcolor}
 
-  
+
 bibliography: ../../library.bib
 ---
 
@@ -49,7 +49,7 @@ library(latex2exp)
 get.src.folder <- function() {
    path.expand("../GP/src")
  }
- 
+
  get.data.folder <- function() {
    path.expand("../GP/data")
  }
@@ -70,7 +70,7 @@ Coupon couru:
 $$
 \mathsf{CC} = Nc \ \ \frac{t_0 - t_{-1}}{D}
 $$
-Prix "pied de coupon" 
+Prix "pied de coupon"
 
 $$
 P = PV - CC
@@ -99,9 +99,9 @@ $$
 \mathcal{PV}01 = -\frac{\partial P}{\partial r} \times 0.0001
 $$
 
-## Objectif de gestion 
+## Objectif de gestion
 
-+ $L(t_i), i=1, \ldots n$ cashflow au passif 
++ $L(t_i), i=1, \ldots n$ cashflow au passif
 + Construire un portefeuille obligataire à même de financer les flux $L(t_i)$, quelque soit l'évolution future des taux.
 
 Deux grandes catégories de méthodes:
