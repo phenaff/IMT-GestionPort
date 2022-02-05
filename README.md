@@ -9,6 +9,6 @@ Cours Gestion de Portefeuille - Institut Mines Télécom (Brest) 2022
 
 - Se procurer le manuel "Financial Risk Modeling and Portfolio Optimization with R".
 
-- Lire attentivement le document **CourseDescription** et effectuer les travaux préliminaires indiqués avant chaque séance.
+- Lire attentivement le document **Cours/CourseDescription** et effectuer les travaux préliminaires indiqués avant chaque séance.
 
 
