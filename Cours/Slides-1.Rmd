@@ -168,8 +168,11 @@ par(op)
 ## Rescaling daily return by $\sigma(r_{t-1})$ [@Chen-2008]
 
 $$
-z_t = \frac{r_t}{\sigma(r_{t-1})}
+z_t = \frac{r_t}{\sigma(|r_{t-1}|)}
 $$
+
+The density of $z_t$ can be approximated by a power law. See paper for details of calculation.
+
 $$
 \left.\begin{aligned}
 p(z_t) & = \frac{\alpha-1}{z_{min}} \left(\frac{z_t}{z_{min}} \right)^{-\alpha} \\
@@ -178,9 +181,8 @@ Pr(z_t > x) & = \left(\frac{z_t}{z_{min}} \right)^{-\alpha+1}
 \right\} z_t > z_{min}
 $$
 
-The density of $z_t$ can be approximated by a power law. See paper for details of calculation.
 
-## Rescaling of daily return by $\sigma(r_{t-1})$
+## Rescaling of daily return by $\sigma(|r_{t-1}|)$
 
 ```{r, powerlaw-1, echo=FALSE, warning=FALSE, message=FALSE, fig.height=6, fig.align="center"}
 
