@@ -89,7 +89,7 @@ Calculer la matrice de correlation des rendements quotidients des actions de l'E
 # NASDAQ
 
 Selection des séries NASDAQ avec au moins 7 ans de données, et calcul du rendement annuel moyen.
-Executez le code pas à pas pour comprendre ce que font \texttt{sapply} et \texttt{do.call}. Notez aussi l'utilisation de l'option \texttt{cache=TRUE}} pour éviter un re-calcul assez long.
+Executez le code pas à pas pour comprendre ce que font \texttt{sapply}. Notez aussi l'utilisation de l'option \texttt{cache=TRUE}} pour éviter un re-calcul assez long.
 
 ```{r, nasdaq, echo=TRUE, cache=TRUE}
 
@@ -100,10 +100,6 @@ ts.all <- get.all.ts(
   dt.start = dmy('01Jan2007'), combine = F
 )
 
-dtStart1 = sapply(ts.all, function(t) time(t)[1])
-dtStart = do.call(c, dtStart1)
-dtEnd = sapply(ts.all, function(t) time(t)[length(t)])
-dtEnd = do.call(c, dtEnd)
 ts.days <- sapply(ts.all, function(t) length(t))
 good.indices <- which(ts.days >= min.length)
 
