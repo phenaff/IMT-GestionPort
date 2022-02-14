@@ -112,7 +112,7 @@ $$
 ## Special case of Minimum Variance problem
 
 $$
-A = \begin{bmatrix} 1  \\ \vdots  \\ 1\end{bmatrix} \ \ \ b = \mu^*
+A = \begin{bmatrix} 1  \\ \vdots  \\ 1\end{bmatrix} \ \ \ b = 1
 $$
 
 Solution:

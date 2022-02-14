@@ -1,0 +1,86 @@
+---
+title: "Gestion de Portefeuille"
+subtitle: "Ex-2: Modèle Moyenne-Variance"
+author: Patrick Hénaff
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: yes
+    latex_engine: pdflatex
+geometry: margin=1in
+
+header-includes:
+  - \usepackage[utf8]{inputenc}
+
+bibliography: ../../library.bib
+csl: ../../apa.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r load-libraries, include=FALSE, echo=TRUE}
+library(quantmod)
+library(xts)
+library(hornpa)
+library(lubridate)
+library(xtable)
+library(PerformanceAnalytics)
+library(TTR)
+library(SuppDists)
+library(lubridate)
+library(roll)
+library(Hmisc)
+library(nFactors)
+library(kableExtra)
+library(quadprog)
+
+get.src.folder <- function() {
+  path.expand("../GP/src")
+}
+
+get.data.folder <- function() {
+  path.expand("../GP/data")
+}
+
+source(file.path(get.src.folder(), 'utils.R'))
+source(file.path(get.src.folder(), 'FileUtils.R'))
+```
+
+# Données
+
+## Séries de rendement quatidien pour 11 valeurs:
+
+```{r, eval=TRUE, echo=TRUE, warning=FALSE}
+daily.ret.file <- file.path(get.data.folder(), "daily.ret.rda")
+load(daily.ret.file)
+kable(table.Stats(daily.ret), "latex", booktabs=T) %>% kable_styling(latex_options="scale_down")
+```
+
+## Rendement annuel moyen:
+
+```{r, echo=TRUE}
+kable(252*100*colMeans(daily.ret), "latex", booktabs=T, digits=1, col.names=c("Rendement (%)"),
+      caption="Rendement annuel moyen")
+```
+
+## Matrice de corrélation des rendements:
+
+```{r, echo=TRUE}
+correl <- cor(daily.ret)
+correl[lower.tri(correl)] <- NA
+options(knitr.kable.NA = '')
+kable(correl, "latex", booktabs=T, digits=2, caption="Corrélation des rendements quotidiens") %>%
+kable_styling(latex_options="scale_down")
+```
+
+# Modèle Moyenne Variance
+
++ Calculer le portefeuille de variance minimale formé à l'aide des 11 titres ci-dessus.
+
++ Calculer le portefeuille risqué qui procure un rendement espéré de 13% par an.
+
++ Si le taux sans risque est de 4%, quel est le portefeuille tangent correspondant?
+
