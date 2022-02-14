@@ -41,21 +41,19 @@ Le manuel est disponible, en autres, sur Amazon.
 
 # Organisation pratique
 
-Des incertitudes planent sur l'organisation du cours. Puisqu'il risque de devoir se tenir "à distance", un certain nombre de dispositions pratiques doivent être mises en place.
-
 Le principe général du cours est celui de la "classe inversée". Il y a 8 modules dans le cours, et chacun s'articule selon le même schéma:
 
 - avant le cours, chacun étudie les documents mis à disposition (articles, chapitre du manuel)
 
 - le module commence par une intervention, pour résumer le sujet et répondre aux questions,
 
-- en groupe de 2 ou 3, les étudiants réalisent ensuite les travaux pratiques propres à chaque module, sous forme de notebooks "Rmarkdown". Tous les documents nécessaires se trouveront sur GitHub en temps utile, dans le dépot public \texttt{phenaff/IMT-GestionPort}.
+- en groupe de 2 ou 3, les étudiants réalisent ensuite les travaux pratiques propres à chaque module, sous forme de notebooks "Rmarkdown". Tous les documents nécessaires se trouveront sur GitHub en temps utile, dans le dépôt public \texttt{phenaff/IMT-GestionPort}.
 
-- après chaque journée , des vidéo-conférences seront programmées pour répondre aux questions soulevées par les travaux de groupe.
+- après chaque séquence, des vidéo-conférences seront programmées pour répondre aux questions soulevées par les travaux de groupe.
 
 # Evaluation
 
-Chaque groupe choisit de rendre 4 TP parmi les 8 proposés, chaque TP comptant pour 25\% de la note, qui sera commune à tous les membres du groupe. Les TP sont à réaliser en notebook "Rmarkdown" [@Xie2019] et à rendre au format .pdf. Vous rendrez également le code source .rmd. "Rmarkdown" est une technologie très utile à maîtriser, car elle permet de produire des analyses *reproductibles*, avec une mise en page de grande qualité. La présentation et mise en page des documents devra donc être soignée, et sera prise en compte dans l'évaluation. Les TP sont à rendre 15 jours après le module correspondant. Vous êtes fortement encouragés à profiter des vidéo-conférences pour valider l'avancement de vos travaux de groupe.
+Chaque groupe choisit de rendre 4 TP parmi les 7 proposés, chaque TP comptant pour 25\% de la note, qui sera commune à tous les membres du groupe. Les TP sont à réaliser en notebook "Rmarkdown" [@Xie2019] et à rendre au format \texttt{.pdf}. Vous rendrez également le code source \texttt{.Rmd}. "Rmarkdown" est une technologie très utile à maîtriser, car elle permet de produire des analyses *reproductibles*, avec une mise en page de grande qualité. La présentation et mise en page des documents devra donc être soignée, et sera prise en compte dans l'évaluation. Les TP sont à rendre 15 jours après le module correspondant. Vous êtes fortement encouragés à profiter des vidéo-conférences pour valider l'avancement de vos travaux de groupe.
 
 # Roles dans chaque groupe de travail
 
@@ -79,7 +77,7 @@ A chaque séance, on utilisera le logiciel R/Rstudio/Rmarkdown pour mettre immé
 
 # Avant la première séance
 
-- Si ce n'est pas le cas, se familiariser avec le système de gestion de version Git et Github. Installer un outil de gestion de version tel que SmartGit. Je suggère à chaque groupe de travail de créer un dépot privé sur GitHub.
+- Si ce n'est pas le cas, se familiariser avec le système de gestion de version Git et Github. Installer un outil de gestion de version tel que SmartGit. Je suggère à chaque groupe de travail de créer un dépôt privé sur GitHub.
 
 - installez R, RStudio, Rmarkdown, TinyTex et vérifiez que votre installation est opérationnelle en exécutant le document \texttt{TP-1/time.series.demo.Rmd}. Vérifiez votre maîtrise de R en faisant les exercices proposés dans ce document.
 
@@ -129,7 +127,7 @@ TP 2 (à rendre pour le `r as.Date("2022-02-15")+15`):
 
 ## Module 3 (16/2: MEDAF, modèle à un facteur et mesure de performance. Modèle de Treynor-Black. Distinction "gestion active/gestion passive". [@Treynor1973].
 
-Le modèle MEDAF (CAPM) et son pendant empirique, le modèle de marché à un facteur sont tous les deux dûs à W. Sharpe. Ces modèles sont toujours importants aujourd'hui car ils servent de base aux mesures de performance des portefeuilles et des stratégies d'investissement. Dérivé lui aussi des travaux de Markowitz, le modèle de Treynor-Black est aussi une avancée importante, car il est à l'origine de la distinction  "gestion active/gestion passive". Ce sont néanmoins des modèles fragiles, on les étudie aujourd'hui plus à cause du vocabulaire qu'ils ont introduit que pour leur utilité pratique.
+Le modèle MEDAF (CAPM) et son pendant empirique, le modèle de marché à un facteur sont tous les deux dus à W. Sharpe. Ces modèles sont toujours importants aujourd'hui car ils servent de base aux mesures de performance des portefeuilles et des stratégies d'investissement. Dérivé lui aussi des travaux de Markowitz, le modèle de Treynor-Black est aussi une avancée importante, car il est à l'origine de la distinction  "gestion active/gestion passive". Ce sont néanmoins des modèles fragiles, on les étudie aujourd'hui plus à cause du vocabulaire qu'ils ont introduit que pour leur utilité pratique.
 
 Documents à lire avant le cours:
 
