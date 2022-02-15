@@ -80,6 +80,28 @@ kable_styling(latex_options="scale_down")
 
 + Calculer le portefeuille de variance minimale formé à l'aide des 11 titres ci-dessus.
 
+```{r, echo=TRUE}
+cov.all <- cov(daily.ret)
+n <- ncol(daily.ret)
+dvec <- rep(0, n)
+Amat <- matrix(1, nrow=n, ncol=1)
+bvec <- 1
+sol <- solve.QP(cov.all, dvec, Amat, bvec, meq=1)
+print(sol$solution)
+```
+
+
+Solution avec poids positifs:
+
+```{r, echo=TRUE}
+A.neq <- diag(n)
+A.eq <- matrix(1, nrow=n, ncol=1)
+Amat <- cbind(A.eq, A.neq)
+bvec <- c(1, rep(0,n))
+sol <- solve.QP(cov.all, dvec, Amat, bvec, meq=1)
+print(sol$solution)
+```
+
 + Calculer le portefeuille risqué qui procure un rendement espéré de 13% par an.
 
 + Si le taux sans risque est de 4%, quel est le portefeuille tangent correspondant?
