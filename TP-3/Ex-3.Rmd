@@ -1,0 +1,65 @@
+---
+title: "Gestion de Portefeuille"
+subtitle: "Ex-3: Risque Systématique et Risque Spécifique dans un modèle à un facteur"
+author: Patrick Hénaff
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: yes
+    latex_engine: pdflatex
+geometry: margin=1in
+
+header-includes:
+  - \usepackage[utf8]{inputenc}
+
+bibliography: ../../library.bib
+csl: ../../apa.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r load-libraries, include=FALSE, echo=TRUE}
+library(quantmod)
+library(xts)
+library(hornpa)
+library(lubridate)
+library(xtable)
+library(PerformanceAnalytics)
+library(TTR)
+library(SuppDists)
+library(lubridate)
+library(roll)
+library(Hmisc)
+library(nFactors)
+library(kableExtra)
+library(quadprog)
+```
+
+# Modèle à un facteur (CAPM/MEDAF)
+
+L'excès de rendement des titres est déterminé par le coefficient d'exposition au risque de marché $\beta_i$:
+
+$$
+r_i = r_f + \beta_i(r_M - r_f) + \epsilon_i
+$$
+
+ou $r_i$, $r-M$, $\epsilon_i$ sont des variables aléatoires, avec $\mathrm{cov}(\epsilon_i, r_M)=0$ et donc:
+
+$$
+\sigma_i^2 = \beta_i^2 \sigma_M^2 + \sigma^2_{\epsilon}
+$$
+Le risque du titre $i$ est décomposé en un risque de marché $\beta_i^2 \sigma_M^2$ et un risque spécifique $\sigma^2_{\epsilon}$ qui peut être éliminé par diversification.
+
+On se propose de mesurer numériquement cet effet de diversification sur un exemple numérique:
+
+On considère $n$ actifs ayant tous $\beta_i = 0.8$, $\sigma_i = .25$ alors que $\sigma_M=.2$.
+
++ Calculer le risque systématique et le risque spécifique de chacun de ces titres.
+
++ Construire un portefeuille équipondéré de $n$ titres, et calculer de nouveau le risque total du portefeuille, décomposé en risque systématique et le risque spécifique.
+
++ Faire varier $n$ et tracer un graphe des deux composantes du risque en fonction de $n$.
+
