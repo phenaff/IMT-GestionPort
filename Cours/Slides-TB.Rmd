@@ -1,7 +1,7 @@
 ---
 title: "SIM & Treynor-Black"
 author: "P. Hénaff"
-date: "3/2021"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 output:
   beamer_presentation:
     colortheme: dolphin
@@ -41,6 +41,9 @@ knitr::knit_hooks$set(chunk = function(x, options) {
 })
 ```
 
+\newcommand{\ones}{\mathbf{1}}
+\newcommand{\onesT}{\mathbf{1}^T}
+
 ```{r load-libraries, include=FALSE, echo=FALSE}
 library(quantmod)
 library(xts)
@@ -73,20 +76,44 @@ source(file.path(get.src.folder(), 'FileUtils.R'))
 
 ## Single Index Model (Sharpe)
 
-* Rendement
-  $$
+Rendement
+
+$$
   R_i(t) = \alpha_i + \beta_i R_M(t) + e_i(t)
-  $$
+$$
   
-* Variance du rendement
-  $$
-  \sigma_i^2 = \beta_i^2 \sigma_M^2 + \sigma(e_i)^2
-  $$
-  
-* Covariance des rendements
-  $$
-  \mbox{cov}(R_i, R_j) = \beta_i \beta_j \sigma_M^2
-  $$
+
+
+## Rappel: Calcul du portefeuille tangent.
+
+$$
+\frac{R_M - r_f}{\sigma_M} = \frac{w^T (R - R_f)}{\sqrt{w^T \Sigma w}}
+$$
+
+
+$$
+\begin{aligned}
+    \mbox{min} \ \ & \frac{1}{2} w^T \Sigma w  \\
+    \mbox{s.t.} & \\
+        \tilde{R}^Tw & = R^*
+  \end{aligned}
+$$
+
+avec $\tilde{R} = R-R_f$, $R^* > R_f$.
+
+## Calcul du portefeuille tangent.
+
+\begin{equation}
+w^* = \lambda^* \Sigma^{-1} \tilde{R}
+\label{eq:w-star}
+\end{equation}
+
+Normalisation des poids $\sum w^*_i = 1$:
+
+\begin{equation}
+w^* = \frac{\Sigma^{-1} \tilde{R}}{\onesT \Sigma^{-1} \tilde{R}}
+\label{eq:sharpe}
+\end{equation}
 
 
 ## Allocation Treynor-Black

@@ -125,42 +125,46 @@ TP 2 (à rendre pour le `r as.Date("2022-02-15")+15`):
 - Construction d'une frontière efficiente.
 - Construction d'un portefeuille optimal moyenne/variance.
 
-## Module 3 (16/2: MEDAF, modèle à un facteur et mesure de performance. Modèle de Treynor-Black. Distinction "gestion active/gestion passive". [@Treynor1973].
+## Module 3 (16/2: MEDAF, modèle à un facteur et mesure de performance. 
 
-Le modèle MEDAF (CAPM) et son pendant empirique, le modèle de marché à un facteur sont tous les deux dus à W. Sharpe. Ces modèles sont toujours importants aujourd'hui car ils servent de base aux mesures de performance des portefeuilles et des stratégies d'investissement. Dérivé lui aussi des travaux de Markowitz, le modèle de Treynor-Black est aussi une avancée importante, car il est à l'origine de la distinction  "gestion active/gestion passive". Ce sont néanmoins des modèles fragiles, on les étudie aujourd'hui plus à cause du vocabulaire qu'ils ont introduit que pour leur utilité pratique.
-
+Le modèle MEDAF (CAPM) et son pendant empirique, le modèle de marché à un facteur sont tous les deux dus à W. Sharpe. Ces modèles sont toujours importants aujourd'hui car ils servent de base aux mesures de performance des portefeuilles et des stratégies d'investissement. 
 Documents à lire avant le cours:
 
-- Article de Treynor & Black (1973)
-- Note de cours "Markowitz & Treynor-Black"
 - Chapitre 5 de Pfaff (2016)
 - Notes "MEDAF et mesures de performance"
 
 Documents:
 
-- slides-MEDAF.pdf
-- Notes-CAPM.pdf
+- slides-3.pdf
+- Notes-MEDAF.pdf
 
 TP 3 (à rendre pour le `r as.Date("2022-02-16")+15`): 
 
 - Construction d'un modèle à 1 facteur
-- Optimisation de portefeuille selon Treynor-Black
 
-## Module 4 (16/2): Modèle de Treynor Black (suite). Risque de modélisation. [@Boyle2012; @Ste1997]
+## Module 4 (16/2): Modèle de Treynor-Black. Distinction "gestion active/gestion passive". [@Treynor1973]. Risque de modélisation. [@Boyle2012; @Ste1997]
 
+Dérivé lui aussi des travaux de Markowitz, le modèle de Treynor-Black est une avancée importante, car il est à l'origine de la distinction  "gestion active/gestion passive". Ce sont néanmoins des modèles fragiles, on les étudie aujourd'hui plus à cause du vocabulaire qu'ils ont introduit que pour leur utilité pratique.
 Identification du "risque de modélisation" dans le cadre du modèle moyenne/variance, et en particulier du risque
 lié à l'utilisation de la matrice de covariance.
 
 Documents à lire avant le cours:
 
+- Article de Treynor & Black (1973)
+- Note de cours "Markowitz & Treynor-Black"
 - Articles cités
 - Chapitre 10 de Pfaff (2016)
 
 Documents:
 
+- slides-TB.pdf
 - slides-MVO.pdf
 
-TP 4 (à rendre pour le `r as.Date("2022-02-16")+15`):
+TP 4-1 (à rendre pour le `r as.Date("2022-02-16")+15`):
+
+- Optimisation de portefeuille selon Treynor-Black
+
+TP 4-2 (à rendre pour le `r as.Date("2022-02-16")+15`):
 
 - Impact de la matrice de covariance sur les résultats de modèle moyenne-variance.
 
@@ -225,6 +229,10 @@ Survol du problème de gestion obligataire et des approches classiques: couvertu
 Documents à lire avant le cours:
 
 - Chapitre 6 "Fixed Income Risk Management" 
+
+Documents:
+
+- Slides-Bonds.pdf
 
 TP 8 (à rendre pour le `r as.Date("2022-03-15")+15`):
 

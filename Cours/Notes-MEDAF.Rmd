@@ -48,15 +48,43 @@ E(R_P) & = \sum_i w_i E(R_i) \\
 \mu_P & = \sum_i w_i \mu_i
 \end{aligned}
 $$
-Le risque du portefeuille est mesuré par sa variance... mais cela n'est pas vrai pour les titres individuels!
-Il faut mesurer le risque d'un titre individuel par sa contribution (positive ou négative) au risque total du portefeuille détenu. Il faut mesurer le risque d'un titre par la covariance de sa rentabilité avec celle du portefeuille global, $\mathrm{cov}(R_i, R_P) = \sigma_{i,P}$.
+Le risque du portefeuille est mesuré par sa variance.
+Il faut par contre considérer chaque titre individuel dans le contexte du portefeuille global. Sa contribution au risque peut
+être positive (si il est positivement corrélé avec le reste du portefeuille), mais il peut par contre contribuer à réduire le risque s'il est négativement corrélé avec le portefeuille.
 
-Contribution marginale du titre $i$ au risque total = $\mathrm{cov}(R_i, R_P) / \sigma_P$.
+### Calcul de la contribution marginale d'un titre au risque global du portefeuille
+
+On calcule la variation marginale du risque d'un portefeuille (mesuré par l'écart type du rendement) en fonction de $w_i$, l'allocation au titre $i$. Soit $RM_p(w)$ ce risque:
+
+\begin{equation}
+\begin{aligned}
+\mathcal{RM}_p(w) &= (w^T \Sigma w)^{\sfrac{1}{2}} \\
+\nabla_w \mathcal{RM}_p(w) &= \frac{\partial (w^T \Sigma w)^{\sfrac{1}{2}}}{\partial w} \\
+&= \frac{1}{2} (w^T \Sigma w)^{-\sfrac{1}{2}} 2 \Sigma w \\
+&= \frac{\Sigma w}{\sqrt{w^T \Sigma w}}
+\end{aligned}
+\end{equation}
+
+Soit finalement:
+
+\begin{equation}
+\frac{\partial \mathcal{RM}_p(w)}{\partial w_i} = \frac{(\Sigma w)_i}{\sqrt{w^T \Sigma w}}
+\end{equation}
+
+Or,
+\begin{equation}
+\begin{aligned}
+(\Sigma w)_i &= \mathrm{Cov}(R_i, R_P) \\
+&= \sigma_{i, P}
+\end{aligned}
+\end{equation}
+
+En conclusion, la contribution marginale du titre $i$ au risque total = $\mathrm{cov}(R_i, R_P) / \sigma_P$.
 
 Conséquences:
 
 - le risque marginal d'un titre peut être positif ou négatif
-- le risque d'un titre depends du portefeuille global dont il fait partie.
+- le risque d'un titre dépends du portefeuille global dont il fait partie, ce qui n'est pas très satisfaisant conceptuellement.
 
 
 ## Rappel sur la frontière efficiente
@@ -65,7 +93,7 @@ Conséquences:
 knitr::include_graphics("capital-market-line.pdf")
 ```
 
-- Soit $T$ le portefeuille tangent, l'équation de la droite de marché (capital market line) est:
+- Soit $T$ le portefeuille tangent, l'équation de la droite de marché (Capital Market Line) est:
 
 $$
 \mu_P = r + \left(\frac{\mu_T-r}{\sigma_T}\right) \sigma_P
@@ -81,7 +109,7 @@ $$
 \mu_P = r_f + \left(\frac{\mu_M-r_f}{\sigma_M}\right) \sigma_P
 $$
 
-Pente de la CML: prix de marché du risque: excédent de rendement espéré par unité de risque. Noter que cette relation s'applique seulement aux portefeuilles efficients, pas aux titres individuels. On a remarqué plus haut que le risque d'un titre individuel devait être fonction de la covariance entre le rendement de ce titre et le rendement du portefeuille global détenu par l'investisseur.
+La pente de la CML est le "prix de marché du risque": l'excédent de rendement espéré par unité de risque. Noter que cette relation s'applique seulement aux portefeuilles efficients, pas aux titres individuels. On a remarqué plus haut que le risque d'un titre individuel devait être fonction de la covariance entre le rendement de ce titre et le rendement du portefeuille global détenu par l'investisseur.
 Ce qui suggère la relation suivante pour un titre individuel:
 
 
@@ -98,7 +126,8 @@ On forme un portefeuille avec l'actif $i$ et le portefeuille de marché $M$:
 \begin{subequations}
 \begin{align}
 \mu(\alpha) &= \alpha \mu_i + (1-\alpha) \mu_M \label{eq:eq-1} \\
-\sigma(\alpha) &= \sqrt{\alpha^2 \sigma_i^2 + (1-\alpha)^2 \sigma_M^2 + 2\alpha(1-\alpha) \sigma_{M,i}} \label{eq:eq-2}
+\sigma(\alpha) &= \sqrt{\alpha^2 \sigma_i^2 + (1-\alpha)^2 \sigma_M^2 + 2\alpha(1-\alpha) \sigma_{M,i}} \notag \\
+&= \sqrt{\alpha^2(\sigma_i^2 + \sigma_M^2 - 2\sigma_{M,i}) + 2\alpha(\sigma_{M,i} - sigma_M^2) + \sigma_M^2} \label{eq:eq-2}
 \end{align}
 \end{subequations}
 
@@ -110,13 +139,13 @@ Pour $\alpha=0$ la courbe $(\sigma(\alpha), r(\alpha))$ doit être tangente à l
 \end{equation}
 
 \begin{equation}
-\frac{\partial \mu(\alpha)}{\partial \sigma(\alpha)} = \frac{\partial \mu / \partial \sigma}{\partial \sigma / \partial \alpha}
+\frac{\partial \mu(\alpha)}{\partial \sigma(\alpha)} = \frac{\partial \mu / \partial \alpha}{\partial \sigma / \partial \alpha}
 \end{equation}
 
-En utilisant les équations (\ref{eq:eq-1}) et (\ref{eq:eq-2}), on obtient:
+En utilisant les équations (\ref{eq:eq-1}) et (\ref{eq:eq-2}), on obtient, évalué à $\alpha=0$:
 
 \begin{equation}
-\frac{\partial \mu / \partial \sigma}{\partial \sigma / \partial \alpha} = \frac{\mu_i - \mu_M}{(\sigma_{M,i} - \sigma^2_M)/\sigma_M}
+\frac{\partial \mu / \partial \alpha}{\partial \sigma / \partial \alpha} = \frac{\mu_i - \mu_M}{(\sigma_{M,i} - \sigma^2_M)/\sigma_M}
 \end{equation}
 
 Utilisant (\ref{eq:eq-3}), on obtient:
@@ -141,7 +170,7 @@ C'est à dire la formule du CAPM avec $\beta_i = \sigma_{M,i} / \sigma^2_M$.
 
 - On peut donc placer les actifs sur un graphe selon les axes $\mu$ (vertical) et $\beta$ (horizontal). Selon la théorie, tous les titres devraient se placer sur une droite, la droite de marché des actifs risqués (Security Market Line). Cette droite passe par le point $(0, r_f)$ et $(1, \mu_M)$.
 
-- Le MEDAF fait disparaitre l'aspect arbitraire de la mesure de risque $\sigma_{i,P}$ mentionnée plus haut. Avec le MEDAF, le risque est mesuré par $\beta_i$, indépendement du portefeuille de l'investisseur. 
+- Le MEDAF fait disparaitre l'aspect arbitraire de la mesure de risque $\sigma_{i,P}$ mentionnée plus haut. Avec le MEDAF, le risque est mesuré par $\beta_i$, indépendamment du portefeuille de l'investisseur. 
 
 
 ## Décomposition de la variance
@@ -151,38 +180,13 @@ Dans l'esprit du CAPM, notons:
 $$
 r_i = r_f + \beta_i(r_M - r_f) + \epsilon_i
 $$
-ou $r_i$, $r-M$, $\epsilon_i$ sont des variables aléatoires. On montre que $\mathrm{cov}(\epsilon_i, r_M)=0$ et donc:
+ou $r_i$, $r-M$, $\epsilon_i$ sont des variables aléatoires, avec $\mathrm{cov}(\epsilon_i, r_M)=0$ et donc:
 
 $$
 \sigma_i^2 = \beta_i^2 \sigma_M^2 + \sigma^2_{\epsilon}
 $$
 Le risque du titre $i$ est décomposé en un risque de marché $\beta_i^2 \sigma_M^2$ et un risque spécifique $\sigma^2_{\epsilon}$ qui peut être éliminé par diversification.
 
-Illustration: On considère $n$ actifs ayant tous $\beta_i = 0.8$, $\sigma_i = .25$ alors que $\sigma_M=.2$.
-
-Le risque spécifique d'un titre est:
-
-```{r}
-sigma.i <- .25
-sigma.M <- .2
-beta.i <- .8
-sigma.eps <- sqrt(sigma.i^2 - (beta.i*sigma.M)^2)
-```
-
-soit 
-$\sigma_{\epsilon} =  `r round(sigma.eps, 3)`$.
-
-Construisons maintenant une portefeuille de 50 titres de ce type, equipondérés:
-
-```{r}
-n <- 50
-sigma2.eps.P = (1/n^2) * n * sigma.eps^2
-sigma2.M.P <- (beta.i * sigma.M)^2
-sigma2.P <- sigma2.M.P + sigma2.eps.P
-```
-
-Soit, pour le portefeuille de 50 titres, un risque spécifique $\sigma_{\epsilon}(P) = `r round(sqrt(sigma2.eps.P),3)`$ 
-et un risque total $\sigma(P) = `r round(sqrt(sigma2.P),3)`$. le risque diversifiable a été pratiquement éliminé.
 
 ## Modèle à un facteur de Sharpe
 
@@ -231,7 +235,6 @@ $$
 
 \textit{ex-ante}, selon le CAPM, $\alpha_p=0$. \textit{ex-post}, ce terme mesure la capacité du gestionnaire à dégager un excess de rendement par rapport au risque pris. Visuellement, le terme $\alpha_p$ représente la distance verticale entre le portefeuille et la SML dans un diagramme rendement/beta.
 
-# Bibliography
 
 
 

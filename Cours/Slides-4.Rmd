@@ -58,8 +58,8 @@ library(knitr)
 library(kableExtra)
 library(latex2exp)
 library(FFdownload)
-library(fPortfolio)
-library(BLCOP)
+#library(fPortfolio)
+#library(BLCOP)
 library(mnormt)
 library(riskParityPortfolio)
 
@@ -275,96 +275,6 @@ $$
 \frac{\hat{\alpha_i}}{\sigma(\hat{\alpha_i})} \sim  \mbox{t-stat}
 $$
 
-## Risk Budgeting
-
-$$
-\sigma(w) = w^T \Sigma w
-$$
-
-Contribution au risque de l'actif $i$:
-
-$$
-\mbox{RC}_i = \frac{w_i \left(\Sigma w \right)_i}{\sqrt{w^T \Sigma w}}
-$$
-
-## Risk Parity & Budgeting
-
-Parity:
-
-$$
-\mbox{RC}_i = \frac{1}{N} \sigma(w)
-$$
-
-Bugeting:
-
-$$
-\mbox{RC}_i = b_i \sigma(w)
-$$
-
-## Cas Paticulier: $\Sigma$ diagonal
-
-$$
-\Omega = \sqrt{\mbox{diag}(\Sigma)}
-$$
-$$
-w = \frac{\Omega^{-1}}{1^T \Omega^{-1}}
-$$
-
-
-## Risk Parity & Budgeting: Exemple.
-
-```{r, eval=TRUE, echo=FALSE, warning=FALSE}
-monthly.ret.file <- "./monthly.ret.rda"
-tickers <- c("AAPL", "AMZN", "MSFT", "F", "SPY", "QQQ", "XOM", "MMM", "HD", "PG", "KO")
-if(!file.exists(monthly.ret.file)) {
-monthly.ret <- NULL
-for(t in tickers) {
-  p <- getSymbols(t, auto.assign = FALSE)
-  tmp <- monthlyReturn(p[, 6])
-  colnames(tmp) <- t
-  if(is.null(monthly.ret)) {
-    monthly.ret <- tmp
-  } else {
-    monthly.ret <- cbind(monthly.ret, tmp)
-  }
-}
-monthly.ret <- removeNA(monthly.ret)
-save(monthly.ret, file='monthly.ret.rda')
-}
-load(monthly.ret.file)
-```
-
-
-```{r, echo=TRUE}
-Sigma <- cov(monthly.ret)
-mu <- colMeans(monthly.ret)
-rpp_naive <- riskParityPortfolio(Sigma, formulation = "diag")
-rpp_vanilla <- riskParityPortfolio(Sigma)
-rpp_mu <- riskParityPortfolio(Sigma, formulation = "rc-over-b-double-index",
-                              mu = mu, lmd_mu = 1e-3,
-                              w_ub = 0.16)
-
-w_all <- cbind("EWP"           = rep(1/nrow(Sigma), nrow(Sigma)),
-               "RPP (naive)"   = rpp_naive$w)
-
-```
-
-## Risk Budgeting
-
-```{r}
-barplotPortfolioRisk(w_all, Sigma)
-```
-
-## Risk Budgeting
-
-```{r}
-w_all = cbind("RPP (vanilla)" = rpp_vanilla$w,
-               "RPP + mu"      = rpp_mu$w)
-
-barplotPortfolioRisk(w_all, Sigma)
-```
-
-
 ## Attribution de Performance (1)
 
 + t=0: Achat d'une action à 50E
@@ -431,22 +341,3 @@ $$
 \end{aligned}
 $$
 
-
-
-## Exercice
-
-Utiliser le package "riskParityPortfolio" et le dataset "monthly returns".
-
-A partir de l'exemple: "A pratical example using FAANG price data", comparer par un backtest les performances et la composition d'un portefeuille tangent et d'un portefeuille "risk parity".
-
-Ajouter des contraintes au portefeuille tangent:
-
-+ Poids $<=$ 20%
-+ Secteur Technologie $<=$ 30%
-
-
-https://cran.r-project.org/web/packages/riskParityPortfolio/vignettes/RiskParityPortfolio.html
-
-## Bibliographie
-
-Grinhold, R.C. and Kahn, R. Active Portfolio Management, Mc Graw-Hill, 2000

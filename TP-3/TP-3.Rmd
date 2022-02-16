@@ -1,6 +1,6 @@
 ---
 title: "Gestion de Portefeuille"
-subtitle: "TP-3: Modèle à un facteur et modèle de Treynor Black"
+subtitle: "TP-3: Modèle à un facteur"
 author: Patrick Hénaff
 date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 output:
@@ -94,80 +94,3 @@ Est-ce que ces mesures de cherté relative vous semble correctes? Essayez de mes
 
 Présentez vos résultats de manière synthétique.
 
-
-# Modèle de Treynor-Black
-
-Le modèle de Treynor-Black a pour objectif d'exploiter les informations calculées en première partie. L'idée étant de constituer un portefeuille "actif" avec les titres qui semblent mal valorisés par le marché, et allouer le reste de sa richesse au portefeuille de marché.
-
-## Selection des titres à inclure dans le portefeuille actif.
-
-C'est l'étape délicate de la méthode de Treynor-Black. A partir de l'évaluation du modèle à un facteur, déterminez quels titres méritent de figurer dans le portefeuille actif. En théorie, on a envie d'acheter les titres sous-cotés ($\alpha_i > 0$) mais cette anomalie n'est peut être qu'apparente! Il faut également apprécier la qualité de l'estimation statistique.
-
-En testant diverses combinaisons de titres à mettre dans le portefeuille actif, vous pourrez mesurer la sensibilité de modèle de Treynor-Black aux données.
-
-## Détermination du portefeuille actif
-
-Ayant choisi les titres à inclure dans le portefeuille actif,
-on rappelle que le poids de chaque titre dans le portefeuille actif est proportionnel au ratio $\alpha_i/\sigma^2(\epsilon_i)$:
-
-$$
-w_i = \frac{\alpha_i/\sigma^2(\epsilon_i)}{\sum_i \alpha_i/\sigma^2(\epsilon_i)}
-$$
-
-Calculer les poids des actifs dans le portefeuille actif. Justifier votre choix d'inclure ou d'exclure tel ou tel instrument.
-
-
-Calculez les valeurs suivantes concernant le portefeuille actif:
-
-\begin{description}
-\item[$R_A$] Excess de rendement
-\item[$\alpha_A$] alpha du portefeuille actif
-\item[$\beta_A$]  beta du portefeuille actif
-\item[$\sigma_A$] ecart-type du portefeuille actif
-\item[$\sigma^2(e_A)$] variance résiduelle du portefeuille actif
-
-\end{description}
-
-
-## Détermination de la pondération entre le portefeuille actif et le portefeuille de marché.
-
-On rappelle l'allocation de richesse au portefeuille actif:
-
-$$
-w_A = \frac{\alpha_A \sigma^2_M}{\alpha_A \sigma^2_M (1-\beta_A) + R_M \sigma^2(e_A)}
-$$
-
-Avec:
-
-$$
-\begin{aligned}
-R_A & = \alpha_A + \beta_A R_M \\
-\sigma^2_A & = \beta^2_A \sigma^2_M + \sigma^2(e_A)
-\end{aligned}
-$$
-
-
-
-## Capital Allocation Line
-
-Calculez l'espérance de rendement et le risque de quelques portefeuilles situés sur la "Capital Allocation Line" qui joint l'actif sans risque et le portefeuille tangent. Placez la solution du modèle de Treynor-Black, le portefeuille actif et le portefeuille de marché sur le graphique ci-dessous.
-
-
-```{r, echo=TRUE}
-Assets <- c("AAPL", "AMZN", "MSFT", "F",  "XOM", "MMM",  "HD",   "PG",   "KO")
-plot.data <- monthly.ret.2[, c(Assets, "Rf")]
-for(a in Assets) {
-  plot.data[, a] <- plot.data[, a] - plot.data$Rf
-  }
-
-res <- data.frame(Mean=apply(plot.data[, Assets],2,mean),
-                  Sd = apply(plot.data[, Assets],2,sd))
-rownames(res) <- Assets
-```
-
-```{r, echo=TRUE}
-plot(Mean ~ Sd, data=res, xlim=c(0, 0.4), ylim=c(0, .05), xlab=expression(sigma),
-     ylab="Excess Return", cex=.5, bty="n", cex.lab=1)
-with(res, text(Mean ~ Sd, labels=row.names(res), pos=4, cex=0.7, col="blue"))
-
-```
