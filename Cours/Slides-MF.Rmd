@@ -58,10 +58,10 @@ library(knitr)
 library(kableExtra)
 library(latex2exp)
 library(FFdownload)
-library(fPortfolio)
-library(BLCOP)
+#library(fPortfolio)
+#library(BLCOP)
 library(mnormt)
-library(riskParityPortfolio)
+#library(riskParityPortfolio)
 
 
 
@@ -95,18 +95,18 @@ abline(a=.02, b=.03, col="red")
 
 ## APT (0)
 
-Valorisation par Arbitrage
+Hypothèses de l'APT
 
 
-+ Rendement fonction linéaire d'un nombre limité de facteurs
++ Le rendement des actifs risqués est une fonction linéaire d'un nombre limité de facteurs
 + Il y a assez de titres sur le marché pour créer des portefeuilles où le risque spécifique a été diversifié
-+ Absence d'arbitrage
++ Il n'y a pas d'opportunités d'arbitrage
 
-## APT (1)
+## APT: Droite de marché des titres pour un facteur
 ::: columns
 
 :::: column
-```{r, apt-1, echo=FALSE, fig.cap="Portefeuille diversifié"}
+```{r, apt-1, echo=FALSE, fig.cap="Portefeuilles diversifiéis"}
 x <- runif(20, -2, 2)
 y <- .02 + .03*x + rnorm(20,0,.0015)
 plot(x,y, xlim=c(-2.5, 2.5), ylim=c(-.1, .1), bty="no", pch=1, col="blue", xlab=expression(F),
@@ -116,7 +116,7 @@ abline(a=.02, b=.03, col="red")
 ::::
 
 :::: column
-```{r, apt-2, echo=FALSE, fig.cap="Action Simple"}
+```{r, apt-2, echo=FALSE, fig.cap="Actions Simples"}
 x <- runif(20, -2, 2)
 y <- .02 + .03*x + rnorm(20,0,.01)
 plot(x,y, xlim=c(-2.5, 2.5), ylim=c(-.1, .1), bty="no", pch=1, col="blue", xlab=expression(F),
@@ -127,7 +127,7 @@ abline(a=.02, b=.03, col="red")
 
 :::
 
-## APT (2)
+## APT: Opportunité d'arbitrage sur un facteur
 
 ::: columns
 
@@ -213,7 +213,7 @@ plotFF <- lines(fig[,"HML"],on=NA,main="HML",col="darkred",lwd=2,lty=1,ylim=c(0,
 plotFF
 ```
 
-## Stabilité des Betas Fama-French (1)
+## Stabilité des Betas Fama-French 
 
 Portefeuille:
 
@@ -223,7 +223,9 @@ Portefeuille:
 + EEM (EM) weighted 20%
 + AGG (Obligations) 10%
 
-## Stabilité des Betas Fama-French (2)
+source: https://rviews.rstudio.com/2018/05/10/rolling-fama-french
+
+## Stabilité des Betas Fama-French
 
 ```{r FF-rolling, echo=FALSE, out.width = '100%', fig.cap="Betas Fama-French"}
 knitr::include_graphics("FF-rolling-betas.png")

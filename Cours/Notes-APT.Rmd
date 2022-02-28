@@ -1,0 +1,395 @@
+---
+output: 
+  pdf_document:
+    keep_tex: true
+    fig_caption: yes
+    latex_engine: pdflatex
+    number_sections: true
+geometry: margin=1in
+
+bibliography: ../../library.bib
+csl: ../../apa.csl
+
+title: "APT & Modèles Multifacteurs"
+author: Patrick Hénaff
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+
+email: "pa.henaff@gmail.com"
+
+fontfamily: mathpazo
+fontsize: 11pt
+header-includes:
+   - \linespread{1.05}
+   - \usepackage[utf8]{inputenc}
+   - \usepackage{amsthm}
+   - \usepackage{xfrac}
+   - \usepackage{booktabs}
+   - \usepackage{tikz}
+   - \usepackage{eurosym}
+   - \newcommand{\ones}{\mathbf{1}}
+   - \newcommand{\onesT}{\mathbf{1}^T}
+   - \newtheorem{thm}{Theorem}
+   - \DeclareMathOperator{\Var}{Var}
+   - \DeclareMathOperator{\E}{E}
+   - \DeclareMathOperator{\Cov}{Cov}
+   - \usepackage{tikz}
+---
+
+```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
+knitr::opts_chunk$set(cache=TRUE)
+knitr::opts_chunk$set(fig.path='figs/')
+knitr::opts_chunk$set(cache.path='_cache/')
+knitr::opts_chunk$set(warning=F, message=F)
+
+library(lubridate)
+library(knitr)
+library(kableExtra)
+library(latex2exp)
+
+get.src.folder <- function() {
+   path.expand("../GP/src")
+ }
+ 
+ get.data.folder <- function() {
+   path.expand("../GP/data")
+ }
+
+ source(file.path(get.src.folder(), 'utils.R'))
+ source(file.path(get.src.folder(), 'FileUtils.R'))
+```
+
+# Prix d'Etat et Valorisation par Arbitrage
+
+Soit une économie dotée de 2 actifs risqués et d'un taux sans risque. Pour 
+l'année à venir, l'incertitude sur les rendements est modélisée par un arbre
+à trois branches. On ignore les probabilités associées à chaque scénario. Les prix des actifs A, B sont respectivement
+102 \euro et 104 \euro\ tandis que le prix de l'actif sans risque R est arbitrairement fixé à 100 \euro, pour un taux sans risque de $2\%$.
+
+ 
+$$
+\begin{minipage}[c]{.3\linewidth}
+   \begin{tikzpicture}
+       \node {101.8} [grow'=right,sibling distance=1cm]
+       child {node {110}}
+       child {node {102}}
+       child {node {96}};
+   \end{tikzpicture}
+   \center{Titre A}
+\end{minipage}\hfill
+\begin{minipage}[c]{.3\linewidth}
+   \begin{tikzpicture}
+       \node {100.3} [grow'=right,sibling distance=1cm]
+       child {node {112}}
+       child {node {99}}
+       child {node {93}};
+   \end{tikzpicture}
+   \center{Titre B}
+\end{minipage}\hfill
+\begin{minipage}[c]{.3\linewidth}
+   \begin{tikzpicture}
+       \node {100} [grow'=right,sibling distance=1cm]
+       child {node {102}}
+       child {node {102}}
+       child {node {102}};
+   \end{tikzpicture}
+   \center{Actif sans risque R}
+\end{minipage}
+$$
+
+Quelle devrait être la valeur du titre C, dont les valeurs attendues selon les trois scenarios sont:
+
+$$
+   \begin{tikzpicture}
+       \node {$C$} [grow'=right,sibling distance=1cm]
+       child {node {108}}
+       child {node {103}}
+       child {node {98}};
+   \end{tikzpicture}
+ $$
+
+On constitue un portefeuille formé des titres A, B et R qui a la même valeur à terme que C. Les poids des titres dans ce portefeuille sont obtenus en resolvant:
+
+
+```{r, echo=TRUE}
+M = matrix(c(110,102,96,112,99,93,102,102,102), nrow=3)
+b = matrix(c(108,103,98))
+P.0 = matrix(c(101.8, 100.3,100), nrow=3)
+w = solve(M, b)
+P.C = t(w) %*% P.0
+rownames(w) <- c('A', 'B', 'R')
+```
+
+$$
+`r write_matex2(M)` W = `r write_matex2(b)`
+$$
+Soit,
+
+$$
+W = `r write_matex2(round(w,2))`
+$$
+et donc un prix 
+$$
+\begin{aligned}
+P_C &= W^T `r write_matex2(P.0)` \\
+&= `r round(P.C,2)`
+\end{aligned}
+$$
+
+Pour simplifier les calculs, il est utile de s'interesser à des actifs élémentaires qui ont un rendement nul dans tous les scénarios sauf un: soit $E_i$ un tel actif, ayant par convention une valeur de $1$ à terme dans  le scénario $i$. Calculons le vecteur $P$ des prix de ces trois actifs. En reprenant la même logique que précédement, 
+
+```{r, echo=TRUE}
+b = diag(3)
+w = solve(M, b)
+P.E = t(w) %*% P.0
+```
+
+on obtient:
+
+$$
+P_E = `r write_matex2(round(P.E,2))`
+$$
+
+Les actifs $E_i$ sont appelés actifs d'Arrow-Debreu, et les prix $P_{E_i}$ sont les prix d'états associés. Notons que pour éviter une opportunité d'arbitrage, $P_{E_i} \geq 0$. En appliquant ces prix d'état à l'actif sans risque, on observe que 
+
+$$
+(1+r) \sum_i P_{E_i} = 1
+$$
+
+Posons $\pi_i = (1+r) P_{E_i}$, et considérons un actif quelconque $Z$ de le prix $Z_0$, valant à terme $Z_i$ si le scenario $i$ se réalise.
+Par définition des prix d'états, on a
+$$
+Z_0 = \sum_i P_{E_i} Z_i
+$$
+ou bien,
+$$
+Z_0 = \frac{1}{1+r} \sum_i \pi_i Z_i
+$$
+avec $\sum_i \pi_i = 1, \pi_i \geq 0$. On peut interpréter $\pi_i$ comme une probabilité associée à l'état $i$. Ainsi, la valeur de l'actif $Z$ est l'espérance de valeur future sous la probabilité $\pi$, actualisée à la date du jour. Un agent qui valoriserait ainsi les actifs, en considérant uniquement l'espérance de valeur future, serait neutre par rapport au risque, et les pseudo-probabilités $\pi$ sont de ce fait nommées "probabilités risque-neutre".
+
+# Le Modèle APT
+
+On suppose que le rendement non-anticipé d'un actif est une fonction linéaire de facteurs de risque indépendents:
+
+\begin{align}
+\label{eq:apt-1}
+R_{it} = E_i + \sum_{k=1}^K \beta_{ik} F_{kt} + \epsilon_{it} 
+\end{align}
+
+## Version simplifiée
+
+Commençons par une version simplifiée de (\ref{eq:apt-1}), sans terme d'erreur. Avec $N$ actifs risqués et $K$ facteurs, la relation s'écrit:
+
+\begin{align}
+\label{eq:apt-2}
+r = \mu + Bf
+\end{align}
+
+ou $B$ est une matrice $N x K, \E(f_i) = 0, \Cov(f) = \Phi$. Constituons un portefeuille d'actifs risqués de poids $w \in R^N$ tel que w est orthogonal aux colonnes de $B$
+
+\begin{align}
+r_W = (1 - w^T \ones) r_0 + w^Tr
+\end{align}
+
+\begin{align}
+\E(r_w) &= r_0 + \E(w^T(r-r_0 \ones)) \\
+&= r_0 + w^T(\mu - r_0 \ones)
+\end{align}
+
+\begin{align}
+\Var(r_w) &= \Cov(w^TBf, w^TBf) \\
+&= w^TB \Cov(f,f) B^Tw \\
+&= 0
+\end{align}
+
+Puisque le portefeuille $w$ est sans risque, sont rendement $w^T\mu = r_0$, ou $w^T(\mu - r_0 \ones) = 0$. Ce qui implique que $(\mu - r_0 \ones)$ est dans le sous-espace généré par les colonnes de $B$. Il existe donc un vecteur $\lambda$ tel que:
+
+\begin{align}
+(\mu - r_0 \ones) = B\lambda
+\end{align}
+
+Pour revenir à la notation initial, on a établi que l'espérance d'excès de rendement  d'un actif risqué est une fonction linéaire des primes de rique $\lambda_k$ associées aux facteurs de risque:
+
+\begin{align}
+\mu_i - r_0 = \sum_k \beta_{ik} \lambda_k
+\end{align}
+
+## Modèle avec terme d'erreur
+
+On considère maintenant le modèle complet, avec un terme d'erreur $\epsilon$:
+
+\begin{align}
+r = \mu + Bf + \epsilon
+\end{align}
+
+avec $\Cov(\epsilon) = \sigma^2 I, \E(\epsilon) = 0, \Cov(\epsilon, f) = 0$. 
+
+On construit $(N-K)$ portefeuilles $v_i, i=1, \ldots, N-K$, orthogonaux entre eux et orthogonaux aux colonnes de $B$, et finalement le portefeuille $v$, moyenne des portefeuilles précédents:
+
+\begin{align}
+v = \frac{1}{N-K} \sum_{i=1}^{N-K} v_i
+\end{align}
+
+Calculons la variance du rendement de ce portefeuille moyen:
+
+\begin{align}
+\Var{V^Tr} &= \Var(v^TBf + v^T \epsilon) \\
+&= \frac{1}{(N-K)^2} Var((\sum_i v_i )^T \epsilon) \\
+&\leq \frac{1}{(N-K)^2} (N-K) a^2 \sigma^2 \\
+&\leq \frac{1}{(N-K)} a^2 \sigma^2 
+\end{align}
+
+Pour $N >> K$, le portefeuille $v$ est essentiellement sans risque, et donc:
+\begin{align}
+\E(v^Tr) = r_0
+\end{align}
+
+Par un raisonnement similaire à celui de la section précédente, on déduit que dans ce modèle également, l'espérance de rendement est 
+une fonction linéaire des primes de risque associées aux facteurs:
+
+\begin{align}
+\mu - r_0 \ones = B \lambda
+\end{align}
+
+Pour résumer, le modèle APT postule que le rendement des actifs risqués est une fonction linéraire d'un nombre limité de facteurs de risque:
+
+\begin{align}
+\label{eq:apt-x}
+R_{it} = E_i + \sum_{k=1}^K \beta_{ik} F_{kt} + \epsilon_{it} 
+\end{align}
+
+et on en déduit que l'espérance de l'excès de rendement de ces actifs risqués est uniquement une fonction des prime de risques des facteurs auquels le titre est exposé:
+
+\begin{align}
+E_i - r_0 = \sum_k \beta_{ik} (r_{F_k} - r_0)
+\end{align}
+
+# Mise en oeuvre
+
+Ce résultat a inspiré de nombreuses stratégies de mise en oeuvre; on peut même dire qu'il a donné naissance à une industrie à part entière. Deux grandes catégories de modèles se dégagent: les modèles implicites, et les modèles explicites.
+
+## Modèles factoriels implicites ou statistiques
+
+Les coefficients $\beta_{ik}$ sont obtenus à l'aide d'une ACP: les facteurs de risque sont les premières composantes principales de la matrice de covariance des rendements.
+
+\begin{enumerate}
+\item A partir d'une ACP, identifier $K$ facteurs et les coefficients $\beta_{ik}$
+\item Calculer le prix du risque $\lambda_k$ de chaque facteur en estimant la regression longitudinale
+
+$$
+\bar{r_i} = \lambda_0 + \lambda_1 \hat{\beta}_{i1} +\lambda_K \hat{\beta}_{iK} + u_i
+$$
+\end{enumerate}
+
+## Modèles factoriels explicites à facteurs macroéconomiques (Chen, Roll et Ross - 1986)
+
+Les facteurs de risques sont définis \textit{a priori}, par exemple:
+\begin{itemize}
+\item Croissance de la production industrielle non-anticipée
+\item Variation de l'anticipation d'inflation
+\item Taux d'inflation non-anticipé
+\item Ecart de taux (Baa - AAA) non anticipé
+\item Variation de l'écart (T Bond - T Bill) non anticipé
+\item Rendement d'un indice de marché
+\end{itemize}
+
+\begin{enumerate}
+\item Pour chacun de ces facteurs, on calcule la valeur non-anticipée du facteur:
+$$
+\tilde{f_{kt}} = f_{kt} - \E(f_{kt})_{t-1})
+$$
+\item Pour chaque actif risqué $i$, estimer les expositions $\beta_{ik}$ aux facteurs en estimant l'équation de régression
+$$
+r_{it} = a_i + \beta_{i1} \tilde{f_{1t}} + \ldots +\beta_{iK} \tilde{f_{Kt}} + \epsilon_{it}
+$$
+\item Calculer le prix du risque $\lambda_k$ de chaque facteur en estimant la regression longitudinale
+
+$$
+\bar{r_i} = \lambda_0 + \lambda_1 \hat{\beta}_{i1} +\lambda_K \hat{\beta}_{iK} + u_i
+$$
+\end{enumerate}
+
+## Extensions du MEDAF
+
+### Modèle de Fama & French
+
+Ce modèle est une extension du MEDAF, et est largement utilisé dans l'industrie.
+
+
+$$
+r_{i,t} = \alpha_i + \beta_{i,M} R_{M,t} + \beta_{i, SMB} SMB_t + \beta_{i, HML} HML_t + e_{i,t}
+$$
+
+\begin{description}
+\item[$r_i$] Excédent de rendement, titre $i$
+\item[$R_M$] Excédent de rendement, marché
+\item[$SMB$] "Small Minus Big": Facteur Capitalisation
+\item[$HML$] "High Minus Low": Facteur Valorisation
+\end{description}
+
+Les facteurs sont des portefeuilles à coût nul définis comme suit: on utilise deux caractéristiques pour définir une segmentation des titres:
+
+\begin{tabular}{cc|c|c|}
+&\multicolumn{1}{c}{}&\multicolumn{2}{c}{\textbf{Valeur Comptable/Marché}}\\
+&\multicolumn{1}{c}{}&\multicolumn{1}{c}{\textbf{Faible}}
+&\multicolumn{1}{c}{\textbf{Forte}} \\
+\cline{3-4}
+\multicolumn{1}{c}{\multirow{2}{*}{\textbf{Capitalisation}}}
+&\textbf{Faible} &SG &SV \\
+\cline{3-4}
+&\textbf{Forte} &LG &LV \\
+\cline{3-4}
+\end{tabular}
+
+Cette segmentation permet de construire deux facteurs:
+
+\begin{description}
+\item[$SMB$] "Small Minus Big": Facteur Capitalisation
+$$
+\frac{1}{2} (SG - SV) - \frac{1}{2} (LG-LV)
+$$
+\item[$HML$] "High Minus Low": Facteur Valorisationa
+$$
+\frac{1}{2}(SV+LV) - \frac{1}{2}(SG+LG)
+$$
+\end{description}
+
+On ajoute souvent au modèle original un quatrième facteur:
+
+$$
+R_{i,t} = \alpha_i + \beta_{i,M} R_{M,t} + \beta_{i, SMB} SMB_t + \beta_{i, HML} HML_t + \beta_{i,UMD} R_{UMD,t} + \ldots + e_{i,t}
+$$
+
+UMD (Up Minus Down): rendement d'un portefeuille de titres ayant eu les rendements les plus élevés sur les 2-12 derniers mois, moins le rendement d'un portefeuille de titres ayant eu les rendements les moins élevés sur la même période. 
+
+Il y a de multiples tentatives de justification de ce facteur:
+
+1. Justifications inspirées par la finance comportamentale. On peut citer, entre autres, le "disposition effect" de Shefrin et Statman (1985), Frazzini (2006): Les investisseurs ont tendance à vendre les investissements profitables tôt, et conserver les perdants dans l'espoir de revenir au point mort. Il en résulte que les prix ont tendance à sous-réagir aux nouvelles, créant une inertie artificielle.
+
+2. L'excès de redement lié au momentum pourrait simplement représenter la rémunération du risque pris. Une de ces justifications serait que les investisseurs dont les titres ont fortement augmenté sont plus exposés au risque de liquidité que ceux dont les titres ont baissé. 
+
+L'article de T. Moskowitz "Explanations for the Momentum Premium" présente une revue detaillée des théories justifiant le facteur "momentum".
+
+
+
+### Modèles multi-indices
+
+# Applications des modèles multi-factoriels
+
+1. Estimation de la matrice de covariance
+
+Si le rendement des titres est généré par un processus multi factoriel
+$$
+R_t = \alpha + \beta^T F_t + \epsilon_t
+$$
+alors la covariance des rendements est
+$$
+\Sigma = \beta^T \Phi \beta + \Sigma_{\epsilon}
+$$
+
+2. Estimation des espérances de rendements $E(R)$ 
+
+3. Expression de "points de vue" sur le rendement des facteurs et construction de portefeuilles privilegiant ces "points de vue".   
+
+4. Ex-post, attribution de la performance des portefeuilles.
+à partir d'estimations de  $\alpha, \beta$, et des espérances de rendement des facteurs
+

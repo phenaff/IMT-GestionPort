@@ -1,0 +1,227 @@
+---
+title: "Gestion de Portefeuille"
+subtitle: "TP-6: Modèle Multi-Facteurs"
+author: Patrick Hénaff
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: yes
+    latex_engine: pdflatex
+    extra_dependencies: ["float"]
+geometry: margin=1in
+
+header-includes:
+  - \usepackage[utf8]{inputenc}
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
+
+bibliography: ../../library.bib
+csl: ../../apa.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(fig.pos = "h", out.extra = "")
+```
+
+```{r load-libraries, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+library(xts)
+library(hornpa)
+library(lubridate)
+library(xtable)
+library(quantmod)
+library(PerformanceAnalytics)
+library(TTR)
+library(lubridate)
+library(roll)
+library(Hmisc)
+library(nFactors)
+library(kableExtra)
+library(FFdownload)
+library(timeSeries)
+library(corpcor)
+library(quadprog)
+```
+
+```{r init, include=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+get.src.folder <- function() {
+  path.expand("../GP/src")
+}
+
+get.data.folder <- function() {
+  path.expand("../GP/data")
+}
+
+source(file.path(get.src.folder(), 'utils.R'))
+source(file.path(get.src.folder(), 'FileUtils.R'))
+```
+
+# Modèle MV multi-factoriel
+
+Pour remédier à la fragilité d'une matrice de covariance estimée sur des données historiques,
+on se propose d'explorer diverses techniques pour obtenir une estimation plus robuste, et 
+d'observer l'effet de ces estimations sur la solution d'un modèle classique moyenne-variance.
+
+Lire et mettre en oeuvre la méthode "modèles diagonalizables de covariance" décrite par Jacobs, Levy et Markowitz (2005). Résoudre le problème MV et comparer le résultat à celui obtenu avec une estimation directe de la matrice à partir des séries chronologiques.
+
+Solution:
+
+Le rendement des actifs est modélisé à l'aide de facteurs (pas nécésairement orthogonaux):
+
+$$
+R_A = \mu_A + B R_F + U_A
+$$
+
+La variance d'un portefeuille $W_A$ est donc:
+\begin{align}
+V(R_P) &= V(R_A^T W_A) \\
+&= V((\mu_A + B R_F + U_A)^T W_A) \\
+&= W_A^T(F\Sigma_F F^T + D)W_A \\
+&= W_F^T \Sigma_F W_F + W_A^T D W_A
+\end{align}
+avec $W_F = F^T W_A$.
+
+Le portefeuille tangent est la solution du problème:
+
+$$
+\begin{aligned}
+    \mbox{max}\ \  &  \frac{\mu^T w_A - r_0}{\sqrt{w_F^T \Sigma_F w_F + w_A^T D w_A}}  \\
+    \mbox{s.t.} & \\
+    & \mathbf{1}^T w  = 1 \\
+    & F^T w_A -w_F = 0 \\
+    & A w_A \geq b \\
+    & w_A \geq 0
+\end{aligned}
+$$
+
+Ce problème est équivalent à:
+
+$$
+\begin{aligned}
+    \mbox{min}\ \  &  w_F^T \Sigma_F w_F + w_A^T D w_A  \\
+    \mbox{s.t.} & \\
+    & \hat{\mu}^T w_A = 1 \\
+    & F^T w_A -w_F = 0 \\
+    & \hat{A}^T w_A \geq 0 \\
+    & w_A \geq 0
+\end{aligned}
+$$
+
+avec $\hat{A} = [\hat{a}_{ij}], \hat{a}_{ij} = a_{ij} - b_i$ et 
+$\hat{\mu} = \mu_A - r_0$.
+
+## Données
+
+On utilisera les facteurs Fama-French ainsi que des séries de cours des actions du
+NASDAQ.
+
+### Facteurs Fama-French
+
+Les facteurs mensuels du modèle classique à trois facteurs sont disponibles sur
+le site de K. French:
+
+```{r, echo=TRUE}
+FF.file <- file.path(get.data.folder(), "FFdownload.rda")
+if(!file.exists(FF.file)) {
+  tempf <- tempfile(fileext = ".RData")
+  inputlist <- c("F-F_Research_Data_Factors") 
+  FFdownload(output_file = FF.file, inputlist=inputlist)
+}
+load(FF.file)
+
+# Fama-French 3 factors - monthly
+
+ts.FF <- FFdownload$`x_F-F_Research_Data_Factors`$monthly$Temp2["1960-01-01/",
+c("Mkt.RF","SMB","HML")]/100
+ts.FF <- timeSeries(ts.FF, as.Date(time(ts.FF)))
+```
+
+
+```{r, echo=FALSE, fig.cap='Facteurs Fama-French'}
+fig <- as.xts(exp(colCumsums(ts.FF)))
+
+plotFF <- plot(fig[,"Mkt.RF"],main="Market",major.ticks = "years",format.labels="%Y",col="black",lwd=2,lty=1,cex=0.8)
+plotFF <- lines(fig[,"SMB"],on=NA,main="SMB",col="darkgreen",lwd=2,lty=1,ylim=c(0,5),cex=0.8)
+plotFF <- lines(fig[,"HML"],on=NA,main="HML",col="darkred",lwd=2,lty=1,ylim=c(0,15),cex=0.8)
+plotFF
+```
+
+
+### Historique des cours du NASDAQ
+
+```{r, echo=TRUE, warning=FALSE, cache=TRUE}
+folder <- 'NASDAQ'
+tickers <- get.tickers(folder)
+ts.all <- get.all.ts(folder, tickers, dt.start = dmy('01Mar2007'), combine = TRUE)
+# exclusion des titres a trop forte vol
+sigma = colSds(ts.all)
+idx <- which((sigma-mean(sigma)) > 3*sqrt(var(sigma)))
+while(length(idx)>0) {
+ts.all <- ts.all[,-idx]
+sigma = colSds(ts.all)
+idx <- which((sigma-mean(sigma)) > 3*sqrt(var(sigma)))
+}
+```
+
+```{r, echo=FALSE, fig.cap="Rendements quotidiens de titres du NASDAQ"}
+plot(ts.all[,1:3])
+```
+
+### Taux sans risque
+
+Le taux sans risque est obtenu du site de la Banque Féderale.
+
+```{r, echo=TRUE}
+# riskless rate
+file.path <- file.path(get.data.folder(), "DP_LIVE_01032020211755676.csv")
+tmp <- read.csv(file.path, header=TRUE, sep=";")[, c("TIME", "Value")]
+dt <- ymd(paste(tmp$TIME, "-01", sep=""))
+rf_rate <- timeSeries(data=tmp$Value/(100.0*12), dt)
+colnames(rf_rate) <- "Rf"
+```
+
+```{r, echo=FALSE, fig.cap="Taux court-terme mensuel des emprunts d'état"}
+plot(rf_rate)
+```
+
+
+# Modèle Moyenne-Variance avec la covariance historique.
+
+Tous les calculs doivent se faire sur des données mensuelles. 
+
+1. Convertir les séries de rendement quotidiennes en séries mensuelles; bien vérifier ce calcul.
+2. Choisir un intervalle de 36 mois et calculer la matrice de covariance. Vérifier 
+que la matrice est positive définite, et effectuer la correction necessaire si besoin.
+3. Calculer le portefeuille tangent.
+
+Que penser de la solution trouvée?
+
+# Modèle Moyenne-Variance avec des facteurs statistiques
+
+On se propose d'utiliser des facteurs issus d'une ACP pour modéliser la covariance
+entre les titres. En pratique, on utilisera le modèle "Diagonizable Model of Covariance" décrit par Jacobs, Levy & Markowitz (2005). 
+
+Avec les données selectionnées précédement,
+
+1. Calculer une ACP et identifier les facteurs qui semblent significatifs.
+2. Construire les séries chronologiques $R_F(t)$.
+3. Calculer la matrice $B$ en estimant par regression les coefficients $\beta_{ik}$ de
+l'équation
+$$
+R_i(t) = \mu_i + \sum_k \beta_{ik} R_{F_k}(t) + U_i(t)
+$$
+4. Calculer les matrices de covariance des facteurs et des termes d'erreur.
+5. Formuler et résoudre le programme quadratique dont la solution est le portefeuille tangent.
+
+Comparer cette solution à la solution précédente.
+
+
+# Modèle Moyenne-Variance avec les facteurs Fama-French
+
+On procède de la même manière que précédement, en substituant les 3 facteurs Fama-French
+aux facteurs statistiques. Noter que la matrice de covariance des facteurs n'est
+plus diagonale.
+
+1. Comparer la solution à la solution précédente. 
+2. Comparer le premier facteur issu de l'ACP au facteur "marché de Fama-French.

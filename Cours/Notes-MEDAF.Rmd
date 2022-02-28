@@ -1,5 +1,5 @@
 ---
-output: 
+output:
   pdf_document:
     keep_tex: true
     fig_caption: yes
@@ -23,6 +23,7 @@ header-includes:
    - \usepackage{amsthm}
    - \usepackage{xfrac}
 ---
+
 
 ```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
 knitr::opts_chunk$set(cache=TRUE)
@@ -164,13 +165,13 @@ C'est à dire la formule du CAPM avec $\beta_i = \sigma_{M,i} / \sigma^2_M$.
 
 ## Interpretation
 
-- Si $\beta_i = 0$, il n'y a pas d'espérance de rendement > $r_f$, car le risque peut être diversifié: on constitue un portefeuille de titres tels que les $\beta_i=0$. La variance de ce portefeuille tends vers 0 avec le nombre de titres, son espérance de rendement est donc $r_f$. 
+- Si $\beta_i = 0$, il n'y a pas d'espérance de rendement > $r_f$, car le risque peut être diversifié: on constitue un portefeuille de titres tels que les $\beta_i=0$. La variance de ce portefeuille tends vers 0 avec le nombre de titres, son espérance de rendement est donc $r_f$.
 
-- On peut donc interpréter $\beta_i$ comme une mesure du risque non-diversifiable: le risque systématique, ou risque d'exposition au marché. 
+- On peut donc interpréter $\beta_i$ comme une mesure du risque non-diversifiable: le risque systématique, ou risque d'exposition au marché.
 
 - On peut donc placer les actifs sur un graphe selon les axes $\mu$ (vertical) et $\beta$ (horizontal). Selon la théorie, tous les titres devraient se placer sur une droite, la droite de marché des actifs risqués (Security Market Line). Cette droite passe par le point $(0, r_f)$ et $(1, \mu_M)$.
 
-- Le MEDAF fait disparaitre l'aspect arbitraire de la mesure de risque $\sigma_{i,P}$ mentionnée plus haut. Avec le MEDAF, le risque est mesuré par $\beta_i$, indépendamment du portefeuille de l'investisseur. 
+- Le MEDAF fait disparaitre l'aspect arbitraire de la mesure de risque $\sigma_{i,P}$ mentionnée plus haut. Avec le MEDAF, le risque est mesuré par $\beta_i$, indépendamment du portefeuille de l'investisseur.
 
 
 ## Décomposition de la variance
@@ -199,7 +200,7 @@ $$
 
 # Mesures de performance
 
-Prendre en compte à la fois la rentabilité moyenne et le risque subi. 
+Prendre en compte à la fois la rentabilité moyenne et le risque subi.
 
 - Ratio de Sharpe, fondé sur $\sigma$, adapté à l'évaluation d'un portefeuille bien diversifié
 - Alpha de Jensen, fondé sur $\beta$, adapté aux titres individuels.

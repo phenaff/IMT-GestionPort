@@ -1,0 +1,112 @@
+---
+output: 
+  pdf_document:
+    keep_tex: true
+    fig_caption: yes
+    latex_engine: pdflatex
+    number_sections: true
+geometry: margin=1in
+
+bibliography: ../../library.bib
+csl: ../../apa.csl
+
+title: "Exercise APT"
+author: Patrick Hénaff
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+
+email: "pa.henaff@gmail.com"
+
+fontfamily: mathpazo
+fontsize: 11pt
+header-includes:
+   - \linespread{1.05}
+   - \usepackage[utf8]{inputenc}
+   - \usepackage{amsthm}
+   - \usepackage{xfrac}
+   - \usepackage{booktabs}
+   - \usepackage{tikz}
+   - \usepackage{eurosym}
+   - \newcommand{\ones}{\mathbf{1}}
+   - \newcommand{\onesT}{\mathbf{1}^T}
+   - \newtheorem{thm}{Theorem}
+   - \DeclareMathOperator{\Var}{Var}
+   - \DeclareMathOperator{\E}{E}
+   - \DeclareMathOperator{\Cov}{Cov}
+   - \usepackage{tikz}
+---
+
+```{r setup, include=FALSE, cache=F, message=F, warning=F, results="hide"}
+knitr::opts_chunk$set(cache=TRUE)
+knitr::opts_chunk$set(fig.path='figs/')
+knitr::opts_chunk$set(cache.path='_cache/')
+knitr::opts_chunk$set(warning=F, message=F)
+
+library(lubridate)
+library(knitr)
+library(kableExtra)
+library(latex2exp)
+
+get.src.folder <- function() {
+   path.expand("../GP/src")
+ }
+ 
+ get.data.folder <- function() {
+   path.expand("../GP/data")
+ }
+
+ source(file.path(get.src.folder(), 'utils.R'))
+ source(file.path(get.src.folder(), 'FileUtils.R'))
+```
+
+Une économie comporte 2 actifs risqués et un au actif sans risque. 
+Il y a un facteur de risque dans cette économie, qu'on nommera "cycle économique". Ce facteur prend
+la valeur $+\frac{1}{2}$ si l'économie est en croissance, et $-\frac{1}{2}$ 
+si elle est en recession. La probabilité de chaque scenario est $0.5$.
+
+Les deux actifs risqués arrivent à maturité dans un an. Leur valeur 
+à terme selon l'état de l'économie est résumé dans les graphiques ci-dessous.
+
+$$
+\begin{minipage}[c]{.5\linewidth}
+   \begin{tikzpicture}
+       \node {100} [grow'=right,sibling distance=1cm]
+       child {node {140}}
+       child {node {100}};
+   \end{tikzpicture}
+   \center{Titre A}
+\end{minipage}\hfill
+\begin{minipage}[c]{.5\linewidth}
+   \begin{tikzpicture}
+       \node {90} [grow'=right,sibling distance=1cm]
+       child {node {160}}
+       child {node {80}};
+   \end{tikzpicture}
+   \center{Titre B}
+\end{minipage}
+$$
+
+# Projection des titres sur les facteurs
+
+Calculez le $\beta$ de chaque titre par rapport au facteur de risque. 
+En pratique, on estimerait ces paramètres par regression, mais ici avec seulement deux observations, il suffit de résoudre un système de deux équations linéaires.
+
+# Prime de risque
+
+Calculez la prime de risque du facteur "cycle économique" et le taux sans risque.
+Comme dans la question précédente, on estimerait en pratique ces paramètres par
+regression mais ici, il suffit de résoudre un système linéaire à deux inconnues.
+
+# Taux sans risque
+
+En utilisant le principe d'absence d'arbitrage, calculez le taux sans risque 
+d'une autre manière que dans la question précédente.
+
+# Probabilités risque-neutres
+
+Calculez les probabilités risque-neutres des scenarios et le 
+prix d'état (prix d'Arrow-Debreu) associé à chaque scénario.
+
+
+
+
+
