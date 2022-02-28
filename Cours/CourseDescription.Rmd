@@ -200,8 +200,11 @@ Documents à lire avant le cours:
 Documents:
 
 - slides-MF.pdf
+- Notes-APT.pdf
 
-Pas de TP.
+TP 6 (à rendre pour le 'r as.Date("2022-03-02") + 15):
+
+- Comparaison de trois mises en oeuvre du modèle MV: Covariance empirique, covariance estimée à partir d'une ACP, covariance estimée à partir du modèle de Fama-French à trois facteurs.
 
 ## Module 7 (15/3): Méthodes récentes de gestion de portefeuille, "risk budgeting" [@Bruder2012]
 

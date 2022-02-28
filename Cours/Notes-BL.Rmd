@@ -32,7 +32,7 @@ library(roll)
 library(Hmisc)
 library(nFactors)
 library(kableExtra)
-library(broom)
+#library(broom)
 library(quadprog)
 ```
 
@@ -89,11 +89,19 @@ Consider the linear model
 $$
 Y = X \beta + E
 $$
-with $\textrm{Cov}(E|X) = \Omega$
+with $\textrm{Cov}(E|X) = \Omega = \sigma^2V$
 
 $$
 \hat{\beta} = (X^T \Omega^{-1}X)^{-1} X^T \Omega^{-1} Y
 $$
+
+Proof:
+
+Set $\Omega = K^TK$ and define $Z=K^{-1}Y, B=K^{-1}X, g=K^{-1}\epsilon$, the linear model becomes:
+$$
+Z = B\beta + g
+$$
+with $E(g)=0$ and $V(g)=\sigma^2I$. Applying OLS to this model yields the desired result.
 
 ## Theil's estimatiom method for posterior distribution
 

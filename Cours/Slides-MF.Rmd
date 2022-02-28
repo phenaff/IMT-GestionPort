@@ -1,7 +1,7 @@
 ---
 title: "Modèles Multi-Facteurs"
 author: "P. Hénaff"
-date: "3/2021"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 output:
   beamer_presentation:
     colortheme: dolphin
@@ -99,6 +99,11 @@ Hypothèses de l'APT
 
 
 + Le rendement des actifs risqués est une fonction linéaire d'un nombre limité de facteurs
+\begin{align}
+\label{eq:apt-1}
+R_{it} = E_i + \sum_{k=1}^K \beta_{ik} F_{kt} + \epsilon_{it} 
+\end{align}
+
 + Il y a assez de titres sur le marché pour créer des portefeuilles où le risque spécifique a été diversifié
 + Il n'y a pas d'opportunités d'arbitrage
 
@@ -106,7 +111,7 @@ Hypothèses de l'APT
 ::: columns
 
 :::: column
-```{r, apt-1, echo=FALSE, fig.cap="Portefeuilles diversifiéis"}
+```{r, apt-1, echo=FALSE, fig.cap="Portefeuilles diversifiés"}
 x <- runif(20, -2, 2)
 y <- .02 + .03*x + rnorm(20,0,.0015)
 plot(x,y, xlim=c(-2.5, 2.5), ylim=c(-.1, .1), bty="no", pch=1, col="blue", xlab=expression(F),
@@ -129,9 +134,6 @@ abline(a=.02, b=.03, col="red")
 
 ## APT: Opportunité d'arbitrage sur un facteur
 
-::: columns
-
-:::: column
 ```{r, apt-3, echo=FALSE, fig.cap="Opportunité d'arbitrage"}
 x <- runif(20, -2, 2)
 y <- .02 + .03*x + rnorm(20,0,.001)
@@ -141,12 +143,6 @@ points(x, z, pch=1, col="blue")
 abline(a=.02, b=.03, col="red")
 abline(a=.0, b=.03, col="green")
 ```
-::::
-
-:::: column
-::::
-
-:::
 
 ## APT(3) Exemple
 
@@ -164,21 +160,19 @@ d'arbitrage        8%          3.837              0.0525
 
 ## APT (3)
 
-::: columns
+Conséquence de ces hypothèses:
 
-:::: column
+L'espérance de rendement est une fonction linéaire d'un nombre limité de facteurs:
 
 $$
-E(R_i) - R_f = \beta_i^1 (\bar{R}_1 - R_f) + \beta_2^1 (\bar{R}_2 - R_f) + \ldots
+E(R_i) - R_f = \beta_{i,1} (\bar{R}_1 - R_f) + \beta_{i,2} (\bar{R}_2 - R_f) + \ldots
 $$
 
-::::
+## Trois types de modèles factoriels
 
-:::: column
-::::
-
-:::
-
++ Facteurs implicites statistiques
++ Facteurs explicites macroéconomiques (Roll & Ross)
++ Facteurs explicites microéconomiques (BARRA, Fama-French)
 
 ## Modèle Fama-French
 
@@ -225,6 +219,8 @@ Portefeuille:
 
 source: https://rviews.rstudio.com/2018/05/10/rolling-fama-french
 
+On calcule l'exposition du portefeuille au facteurs sur une période de 3 ans...
+
 ## Stabilité des Betas Fama-French
 
 ```{r FF-rolling, echo=FALSE, out.width = '100%', fig.cap="Betas Fama-French"}
@@ -261,19 +257,29 @@ knitr::include_graphics("Selection_025.png")
 
 ## Facteurs et Fouille de Données (Harvey et al.)
 
+Plus de 300 facteurs "découverts" depuis le publication de Sharpe (1967) jusqu'en 2015 (article de Harvey).
+
 $$
 R_i(t) - R_f(t) = \alpha_i + \beta_i(R_M(t) - R_f(t)) + \gamma_i F(t) + \epsilon_i(t)
 $$
 
-$$
-\frac{\hat{\gamma_i}}{\sigma(\gamma_i)} \sim  \mbox{t-stat}
-$$
+## Illustration: Regression sur des séries $N(0,1)$
 
-Erreur Type I: Accepter un facteur alors qu'il n'est pas significatif.
+```{r, echo=FALSE, cache=TRUE}
+nb.obs <- 200
+nb.factors <- 100
 
-## TP 6: Simulation numérique de la distribution de $\alpha$
+R <- rnorm(nb.obs)
+F <- matrix(rnorm(nb.obs*nb.factors), nrow=nb.obs)
 
-+ Tirer un échantillon de $R(t)$ et $R_M(t)$ sous $H_0: \alpha_i=0$
-+ Estimer $\alpha$ par regression, en utilisant \texttt{apply}
-+ Calculer la distribution empirique du ratio et en déduire un test de significativité. 
+t.stat <- rep(0, nb.factors)
 
+for(i in seq_len(nb.factors)) {
+  res <- lm(R ~F[,i])
+  t.stat[i] <- coef(summary(res))[,"t value"][2]
+}
+```
+
+```{r, fig.cap="Distribution de t-stat. Regression sur des séries N(0,1)"}
+hist(t.stat)
+```
