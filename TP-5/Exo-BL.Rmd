@@ -1,0 +1,149 @@
+---
+title: "Exercice Modèle Black-Litterman"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: yes
+    latex_engine: pdflatex
+geometry: margin=1in
+
+header-includes:
+  - \usepackage[utf8]{inputenc}
+
+bibliography: ../../library.bib
+csl: ../../apa.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+```{r load-libraries, include=TRUE, echo=TRUE, message=FALSE, warning=FALSE}
+library(xts)
+library(hornpa)
+library(lubridate)
+library(xtable)
+library(PerformanceAnalytics)
+library(TTR)
+library(lubridate)
+library(roll)
+library(Hmisc)
+library(nFactors)
+library(kableExtra)
+#library(broom)
+library(quadprog)
+```
+
+L'objet de cet exercice est de combiner l'approche de Black-Litterman et le modèle moyenne-variance classique pour imposer des contraintes à la solution.
+
+# Rappel
+
+Distribution ex=ante des rendements:
+
+$$
+r \sim \mathcal{N}(\mu, \Sigma)
+$$
+
+Rendements espérés d'équilibre
+
+$$
+\Pi = \delta \Sigma w_{eq}
+$$
+
+Distribution de l'espérance de rendement:
+$$
+\mu = \Pi + \epsilon^{(e)}
+$$
+avec
+$$
+\epsilon^{(e)} \sim \mathcal{N}(0, \tau \Sigma)
+$$
+where $\tau$ is a scalar.
+
+Expression des vues:
+
+$$
+P \mu = Q + \epsilon^{(v)}
+$$
+avec
+
+$$
+\epsilon^{(v)} \sim \mathcal{N}(0, \Omega)
+$$
+
+Solution ex-post:
+
+
+After algebraic manipulations:
+
+Espérance de rendement
+
+$$
+\mu^* = \left[ (\tau \Sigma)^{-1} + P^T\Omega^{-1} P \right]^{-1} \left[ (\tau \Sigma)^{-1} \Pi + P^T\Omega^{-1} Q \right]
+$$
+
+Covariance des rendements
+
+$$
+M^{-1} = \left[ (\tau \Sigma)^{-1} + P^T\Omega^{-1} P \right]^{-1}
+$$
+Distribution ex-post des rendements:
+
+$$
+r \sim \mathcal{N}(\mu^*, \Sigma^*)
+$$
+avec $\Sigma^* = \Sigma + M^{-1}$.
+
+# Données
+
+```{r, echo=FALSE}
+spl <- function (
+  s,      # input string
+  delim = ',' # delimiter
+) {
+  unlist(strsplit(s,delim))
+}
+```
+
+Données de He & Litterman:
+```{r, echo=T}
+ data =
+'1,0.4880,0.4780,0.5150,0.4390,0.5120,0.4910
+ 0.4880,1,0.6640,0.6550,0.3100,0.6080,0.7790
+ 0.4780,0.6640,1,0.8610,0.3550,0.7830,0.6680
+ 0.5150,0.6550,0.8610,1,0.3540,0.7770,0.6530
+ 0.4390,0.3100,0.3550,0.3540,1,0.4050,0.3060
+ 0.5120,0.6080,0.7830,0.7770,0.4050,1,0.6520
+ 0.4910,0.7790,0.6680,0.6530,0.3060,0.6520,1'
+
+  Corrmat = matrix( as.double(spl( gsub('\n', ',', data), ',')),
+                    nrow = length(spl(data, '\n')), byrow=TRUE)
+
+  stdevs = c(16.0, 20.3, 24.8, 27.1, 21.0,  20.0, 18.7)/100
+  w.eq = c(1.6, 2.2, 5.2, 5.5, 11.6, 12.4, 61.5)/100
+  # Prior covariance of returns
+  Sigma = Corrmat * (stdevs %*% t(stdevs))
+```
+
+Rendements d'équilibre
+
+```{r, echo=T}
+# risk aversion parameter
+delta = 2.5
+Pi = delta * Sigma %*% w.eq
+```
+
+
+```{r}
+AssetNames = c('Australia','Canada','France','Germany','Japan','UK','USA')
+Table2 = cbind(AssetNames, round(cbind(stdevs, w.eq, Pi) * 100,1))
+colnames(Table2) = c('Assets','Std Dev','Weq','PI')
+kable(Table2, format='latex', booktabs=T)
+```
+
+# Calculs
+
+Résoudre le programme d'optimisation en imposant la vue #1 (le marché allemand sur-performe) tels que $w_i>=0$.
+
