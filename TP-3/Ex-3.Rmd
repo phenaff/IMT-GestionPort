@@ -63,3 +63,19 @@ On considère $n$ actifs ayant tous $\beta_i = 0.8$, $\sigma_i = .25$ alors que 
 
 + Faire varier $n$ et tracer un graphe des deux composantes du risque en fonction de $n$.
 
+```{r, echo=TRUE}
+beta.i <- .8
+sigma.i <- .25
+sigma.M <- .2
+sigma.e <- sqrt(sigma.i^2 - beta.i^2 * sigma.M^2)
+
+sigma.p <- function(n) {
+sqrt(sigma.M^2 * beta.i^2 + (1/n)*sigma.e^2)
+}
+
+nb <- seq(2,100,2)
+sigma.p <- sapply(nb, sigma.p)
+sigma.market <- beta.i * sigma.M
+plot(nb, sigma.p, type='l', ylim=c(.1, .3))
+abline(h=sigma.market)
+```

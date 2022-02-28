@@ -48,10 +48,10 @@ load(monthly.ret.file)
 index(monthly.ret) <- floor_date(index(monthly.ret), "month")
 ```
 
-## Matrice de covariance des rendements:
+## Matrice de corrélation des rendements:
 
 ```{r, echo=TRUE}
-kable(cov(monthly.ret), "latex", booktabs=T) %>%
+kable(cor(monthly.ret), "latex", booktabs=T) %>%
 kable_styling(latex_options=c("scale_down", "HOLD_position"))
 ```
 
