@@ -35,7 +35,7 @@ for (l in list.of.calls) {
   }
 }
 
-lapply(list.of.packages, write, "requirements.txt",
+lapply(list.of.packages, write, "installed_packages.txt",
        append=TRUE)
 
 
