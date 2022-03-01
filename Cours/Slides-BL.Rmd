@@ -61,7 +61,6 @@ library(FFdownload)
 library(fPortfolio)
 library(BLCOP)
 library(mnormt)
-library(riskParityPortfolio)
 
 
 
@@ -250,11 +249,10 @@ weightsPie(optPorts$posteriorOptimPortfolio)
 
 ::::
 
-## Exercise
+## Exercice
 
-Ajouter les "vues" suivantes au modèle. Choisissez les sd qui vous semblent pertinentes.
-Résoudre avec la librairie BLCOP.
-
-* BAC va surperformer Citibank (C)
-* Dell aura un rendement de 0.5%
+1. Contraindre $w_i > 0$ en utilisant le code de la note de cours.
+2. Avec la librairie BLCOP, ajouter les "vues" suivantes au modèle. Choisissez les sd qui vous semblent pertinentes.
+  * BAC va surperformer Citibank (C)
+  * Dell aura un rendement de 0.5%
 
