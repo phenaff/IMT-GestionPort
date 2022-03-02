@@ -10,7 +10,7 @@ geometry: margin=1in
 bibliography: ../../library.bib
 csl: ../../apa.csl
 
-title: "Exercise APT"
+title: "Exercice APT"
 author: Patrick Hénaff
 date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 
