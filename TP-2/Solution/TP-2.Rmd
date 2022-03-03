@@ -1,0 +1,149 @@
+---
+title: "Gestion de Portefeuille"
+subtitle: "TP-2: Modèle de Markowitz et extensions"
+author: Patrick Hénaff
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: yes
+    latex_engine: pdflatex
+geometry: margin=1in
+
+header-includes:
+  - \usepackage[utf8]{inputenc}
+
+bibliography: ../../library.bib
+csl: ../../apa.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r load-libraries, include=FALSE, echo=TRUE}
+library(quantmod)
+library(xts)
+library(hornpa)
+library(lubridate)
+library(xtable)
+library(PerformanceAnalytics)
+library(TTR)
+library(SuppDists)
+library(lubridate)
+library(roll)
+library(Hmisc)
+library(nFactors)
+library(kableExtra)
+library(quadprog)
+```
+
+# Données
+
+## Séries de rendement quotidien pour 11 valeurs:
+
+```{r, eval=TRUE, echo=TRUE, warning=FALSE}
+daily.ret.file <- "./daily.ret.rda"
+load(daily.ret.file)
+kable(table.Stats(daily.ret), "latex", booktabs=T) %>%
+  kable_styling(latex_options=c("scale_down", "HOLD_position"))
+```
+
+## Rendement moyen:
+
+```{r, echo=TRUE}
+kable(colMeans(daily.ret)*100, "latex", booktabs=T, col.names="Rendement",
+      caption="rendement moyen journalier (\\%)") %>%
+  kable_styling(latex_options=c("HOLD_position"))
+```
+
+## Matrice de covariance des rendements:
+
+```{r, echo=TRUE}
+kable(cov(daily.ret), "latex", booktabs=T) %>%
+kable_styling(latex_options=c("scale_down", "HOLD_position"))
+
+```
+
+# Droite de Marché des Capitaux (Capital Market Line)
+
++ A partir des calculs présentés en cours, concevoir une méthode numérique
+  pour déterminer le portefeuille tangent quand les poids des actifs risqués sont contraints à être positifs: $w_i >= 0$.
+
++ Même calcul en ajoutant des contraintes supplémentaires qui vous semblent pertinentes     (ex: pas plus de 20\% de l'actif risqué alloué à un seul titre, etc.)
+
+
+On calcule le portefeuille optimal pour un rendement espéré quelconque, puis on normalise les poids les actifs risqués pour obtenir le portefeuille tangent.
+
+Le taux sans risque est fixé à $1\%$ par an.
+
+```{r, echo=TRUE}
+mu <- colMeans(daily.ret) * 252
+n <- length(mu)
+
+mu.free <- .01
+Sigma <- cov(daily.ret) * 252
+# rendement espéré arbitraire
+mu.star <- .07
+A.sum <- matrix(mu-mu.free, ncol=1)
+A.mat <- cbind(A.sum,
+               diag(n))
+b <- c(mu.star-mu.free, rep(0, n))
+qp <- solve.QP(2*Sigma, rep(0,n), A.mat, b, meq=1)
+
+# tangency portfolio
+w.tangent <- round(matrix(qp$solution / sum(qp$solution), ncol=1),3)
+names(w.tangent) <- names(mu)
+sigma.tangent <- sqrt(t(w.tangent) %*% Sigma %*% w.tangent)
+
+# utilitaire pour afficher les résultats
+kable.portfolio <- function(w.opt, mu.opt, sigma.opt, title) {
+w <- data.frame(w.opt, row.names = names(w.opt))
+names(w) = "allocation"
+
+x <- matrix(c(mu.opt, sigma.opt), ncol=1)
+rownames(x) <- c("return", "stdev")
+x = data.frame(x)
+names(x) = " "
+
+kable(list(w, x), "latex", booktabs=T, caption=title)
+}
+```
+
+```{r}
+kable.portfolio(w.tangent, sum(w.tangent*mu), sigma.tangent, "Port. Tangent") %>%
+  kable_styling(latex_options="HOLD_position")
+```
+
+Pour imposer la contrainte $w_i < .2$ sur les poids normalisés, on exprime cette contrainte par
+$$
+w_i <= .2 \sum_{k=1}^n w_k, \ \ i=1, \ldots, n
+$$
+
+```{r, echo=TRUE}
+max.weight <- .2
+A.weight <- matrix(max.weight, nrow=n, ncol=n)
+diag(A.weight) <- max.weight-1
+A.mat <- cbind(A.sum,
+               A.weight,
+               diag(n))
+b <- c(mu.star-mu.free, rep(0,n), rep(0, n))
+qp <- solve.QP(2*Sigma, rep(0,n), A.mat, b, meq=1)
+
+# tangency portfolio
+w.tangent.2 <- round(matrix(qp$solution / sum(qp$solution), ncol=1),3)
+names(w.tangent.2) <- names(mu)
+sigma.tangent.2 <- sqrt(t(w.tangent.2) %*% Sigma %*% w.tangent.2)
+```
+
+```{r}
+kable.portfolio(w.tangent.2, sum(w.tangent.2*mu), sigma.tangent.2, "Port. Tangent < 20\\%")  %>%
+  kable_styling(latex_options="HOLD_position")
+```
+
+
+
+
+
+
+

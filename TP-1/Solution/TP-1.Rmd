@@ -1,0 +1,273 @@
+---
+title: "Gestion de Portefeuille"
+subtitle: "TP-1: Analyse du CAC40"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+
+output: 
+  pdf_document:
+    keep_tex: true
+    fig_caption: yes
+    latex_engine: pdflatex
+geometry: margin=1in
+
+header-includes:
+  - \usepackage[utf8]{inputenc}
+  - \usepackage{amsmath}
+  - \usepackage{amsfonts}
+  - \usepackage{amssymb}
+  - \usepackage[cyr]{aeguill}
+  - \usepackage[french]{babel}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r load-libraries, include=FALSE, echo=TRUE}
+library(lubridate)
+library(Hmisc)
+library(tseries)
+library(timeSeries)
+library(reshape2)
+library(ggplot2)
+library(corrplot)
+library(kableExtra)
+library(zoo)
+
+get.src.folder <- function() {
+  path.expand("../GP/src")
+}
+
+get.data.folder <- function() {
+  path.expand("../GP/data")
+}
+
+source(file.path(get.src.folder(), 'utils.R'))
+source(file.path(get.src.folder(), 'FileUtils.R'))
+```
+
+
+## Les données
+
+On charge les séries de rendements pour l'indice et les composants de l'indice.
+
+```{r, get-data, warning=FALSE, echo=TRUE, cache=TRUE}
+
+tickers <- NULL
+  ts.all <- get.all.ts(
+    'CAC40', tickers, returns = TRUE,
+    dt.start = dmy('01Jul2007'), combine = T)
+  
+  # remove Valeo - bad data
+  ts.all <- ts.all[,-17]
+  
+  # keep good data window
+  ts.all <- window(ts.all, dmy('01Jul2007'), 
+                   dmy('01Jan2009'))
+  
+  # merge with cac40 index
+  cac.ret <- get.ts('fchi', 'CAC40', returns = T)
+
+  names(cac.ret) <- 'CAC40'
+  ts.all <- removeNA(cbind(ts.all, cac.ret))
+```
+
+```{r, plot-cac-1, echo=TRUE, fig.height=4, echo=TRUE}
+plot(ts.all[, c(1,2,3)], main='Rendement journalier')
+```
+
+Puis on filtre les points suspects: rendements supérieur à 8 s.d.
+
+```{r, filter, warning=FALSE, echo=TRUE} 
+  # flag bad data points: > * \sigma
+  good.limit <- 8*apply(ts.all, 2, sd)
+  
+  ts.bad <- ts.all*FALSE
+  for(j in seq(ncol(ts.bad))) {
+    ts.bad[,j] <- abs(ts.all[,j]) > good.limit[j]
+  }
+  good.index <- !apply(ts.bad,1,any)
+  ts.all <- ts.all[good.index,]
+```
+
+Finalement, on calcule les rendements hebdomadaires:
+  
+```{r, weekly-return, echo=TRUE} 
+  # aggregate returns by week
+  by <- timeSequence(from=start(ts.all), 
+                     to=end(ts.all), by='week')
+  ts.all.weekly <- aggregate(ts.all, by, sum)
+
+  ts.stocks <- ts.all.weekly[,-40]
+  ts.index <- ts.all.weekly[,40]
+```
+```{r, plot-cac-2, echo=TRUE, fig.height=4}
+plot(ts.index, main='Weekly return')
+```
+
+## Calcul de correlation
+
++ Calculer la matrice de corrélation des actions de l\'indice. 
+
++ Rechercher des actions fortement corrélées et d'autres qui semblent indépendantes. 
+Justifier ces observations en considérant la nature des entreprises.
+
++ Choisir 3 titres, et reproduire la figure 3.5, page 35 du manuel de B. Pfaff.
+Commenter les résultats obtenus.
+
+### Matrice de correlation
+
+```{r, echo=T}
+cor.stocks = cor(ts.stocks)
+corrplot(cor.stocks, type="upper", cl.pos = "r", tl.pos = "lt",
+tl.cex = 0.5, title= "Corrélation des composants du CAC 40", mar=c(0,0,1,0))
+```
+
+### Recherche des titres fortement corrélés
+
+```{r}
+nlargest <- function(m, n, sim = TRUE, dec=T) {
+  mult <- 1;
+  if (sim) mult <- 2;
+  res <- order(m, decreasing=dec)[seq_len(n) * mult];
+  pos <- arrayInd(res, dim(m), useNames = TRUE);
+  list(values = m[res],
+       position = pos)
+}
+remove_ex <- function(x) {
+  gsub("\\..*","",x)
+}
+
+diag(cor.stocks) <- NA
+row.names <- sapply(row.names(cor.stocks), remove_ex)
+```
+
+Les corrélations les plus fortes
+
+Les fortes corrélations sont souvent justifiées par l'appartenance à un même secteur économique: le secteur bancaire (GLE, BNP, ACA) ou le secteur automobile (RNO, UG) et encore le luxe (KER, MC).
+
+```{r, echo=TRUE}
+hi.cor = nlargest(cor.stocks, 10, sim=T, dec=T)
+res = data.frame(stock.1=row.names[hi.cor$position[,1]],
+                 stock.2=row.names[hi.cor$position[,2]],
+                 corr=hi.cor$values)
+```
+```{r}
+kbl(res, format='latex', booktabs=T, col.names=c("", "", "Corrélation"), 
+    caption="Les 10 corrélations les plus fortes du CAC 40") %>%
+  kable_styling(latex_options="HOLD_position")
+```
+
+Les corrélations les plus faibles
+
+```{r, echo=TRUE}
+hi.cor = nlargest(cor.stocks, 10, sim=T, dec=F)
+res = data.frame(stock.1=row.names[hi.cor$position[,1]],
+                 stock.2=row.names[hi.cor$position[,2]],
+                 corr=hi.cor$values)
+```
+```{r}
+kbl(res, format='latex', booktabs=T, caption="Les 10 corrélations les plus faibles du CAC 40") %>%
+  kable_styling(latex_options="HOLD_position")
+```
+
+Corrélations glissantes - secteur bancaire
+
+On observe une décorrélation de SOCGEN durant la crise financière du fait de sa plus grande exposition aux activités de marché.
+
+```{r}
+cor.calc <- function(x, pairs){
+cor(x)[pairs]
+} 
+rc.tickers <- c("bnp.pa", "gle.pa", "aca.pa")
+comb <- t(combn(3,2))
+CAC.ts <- as.zoo(ts.all)[, rc.tickers]
+rcor <- rollapply(CAC.ts, width = 22, cor.calc, align = "right", by.column = FALSE, pairs=comb)
+foo <- function(x) {
+  paste(remove_ex(rc.tickers[x[1]]), "&", remove_ex(rc.tickers[x[2]]), sep=" ")
+  }
+
+colnames(rcor) <- apply(comb,1,foo)
+ 
+index(rcor) = as.Date(index(rcor))
+plot(rcor,main = "Corrélations dans le secteur bancaire",xlab = "Date")
+```
+
+
+## Analyse en composantes principales
+
+```{r}
+nlargest <- function(m, n, sim = TRUE) {
+  mult <- 1;
+  if (sim) mult <- 2;
+  res <- order(m, decreasing=F)[seq_len(n) * mult];
+  pos <- arrayInd(res, dim(m), useNames = TRUE);
+  list(values = m[res],
+       position = pos)
+}
+
+diag(cor.stocks) <- NA
+w = nlargest(cor.stocks, 10)
+```
+
+```{r}
+  pca <- prcomp(ts.stocks)
+```
+Les 6 premiers facteurs expliquent 80\% de la variance.
+
+
+```{r}
+pc.var <- pca$sdev[1:6]^2/sum(pca$sdev^2)
+names(pc.var) <- paste('PC-', seq(6),sep='')
+```
+
+```{r}
+barplot(pc.var, ylab='% Variance')
+```
+
+
+Les actions du CAC40 sont assez uniformement exposées au premier
+facteur, que l'on peut de ce fait interpréter comme le "marché" 
+
+```{r, fig.cap="Projection des rendements hebdomadaires sur le 4 premières composantes principales", echo=F}
+melted <- melt(pca$rotation[,1:4])
+
+  ggplot(data=melted) +
+    geom_bar(aes(x=Var1, y=value),
+             stat="identity") +
+    facet_wrap(~Var2)
+```
+
+  
+Cette interprétation est validée en construisant une serie
+chronologique du facteur 1 et en la comparant à l'indice lui même 
+
+```{r, echo=TRUE}
+  pc.1 <- ts.stocks %*% pca$rotation[,1]
+  ts.pc.1 <- timeSeries(pc.1, time(ts.stocks))
+```
+
+```{r, echo=F, fig.cap="Rendement hebdomadaire de l'indice CAC 40 et premier facteur"}
+  plot(cbind(scale(ts.pc.1), scale(ts.index)), plot.type='single',
+       col=c('blue', 'red'), ylab='Rendement hebdomadaire normalisé', xlab=" ")
+  legend('bottomleft', c('PC 1', 'CAC 40 index'), lwd=2,
+         col=c('blue', 'red'), cex=.6)
+```
+
+.
+Les valeurs du secteur bancaire et des assurances se projettent
+fortement sur la deuxième composante principale:
+
+
+```{r, echo=TRUE}
+v <- pca$rotation[,2]
+kbl(v[order(abs(v), decreasing=T)][1:10], format="latex", booktabs=T, 
+    caption="Projection des rendements sur la 2ème CP", col.names="Corrélation") %>%
+kable_styling(latex_options="HOLD_position")
+```
+
+On observe que le secteur "banque-assurance" se projette fortement sur ce deuxième axe, mettant en avant un
+élément original du paysage bancaire Français.
+
+
+
