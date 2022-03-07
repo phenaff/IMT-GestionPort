@@ -1,0 +1,130 @@
+---
+title: "Options dans le cadre Black-Scholes"
+subtitle: 'TP-2: Pricing Vanna-Volga'
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
+  pdf_document:
+    keep_tex: yes
+    fig_caption: yes
+    latex_engine: pdflatex
+  word_document: default
+geometry: margin=1in
+header-includes:
+- \usepackage[utf8]{inputenc}
+- \usepackage{amsmath}
+- \usepackage{amsfonts}
+- \usepackage{amssymb}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+The purpose of this problem set is to explore the Vanna-Volga pricing model. In this problem set, you will use the following functions:
+
+GBSPrice: Price of a vanilla option:
+\[
+P = f(\text{PutCall}, S, K, T, r, b, \sigma)
+\]
+
+where:
+\begin{description}
+\item[PutCall] 'c' for a call, 'p' for a put
+\item[$b$] cost of carry: ridk free rate $r$ less dividend yield $d$
+\item[$r$] risk-free rate
+\end{description}
+
+```{r, echo=TRUE}
+GBSPrice <- function(PutCall, S, K, T, r, b, sigma) {
+  d1 <- (log(S/K) + (b+sigma^2/2)*T)/(sigma*sqrt(T))
+  d2 <- d1 - sigma*sqrt(T)
+
+  if(PutCall == 'c')  
+    px <- S*exp((b-r)*T)*pnorm(d1) - K*exp(-r*T)*pnorm(d2)
+  else
+    px <- K*exp(-r*T)*pnorm(-d2) - S*exp((b-r)*T)*pnorm(-d1)
+
+px
+}
+```
+
+GBSVega: Vega ($\frac{\partial P}{\partial \sigma}$) of a Vanilla option:
+
+```{r, echo=TRUE}
+GBSVega <- function(PutCall, S, K, T, r, b, sigma) {
+  d1 <- (log(S/K) + (b+sigma^2/2)*T)/(sigma*sqrt(T))
+  S*exp((b-r)*T) * dnorm(d1)
+}
+```
+
+# Volatility Interpolation
+
+Given the implied volatility at three strikes, we will use the Vanna-Volga pricing method to interpolate the
+volatility curve. Assume $r=0, b=0, T=1$.
+
+```{r, echo=TRUE}
+# Benchmark data: (strike, volatility)
+VolData <- list(c(80, .32), c(100, .30), c(120, .315))
+```
+
+Let's first define an array of pricing functions for the 
+benchmark instruments:
+
+```{r, echo=TRUE}
+C1 <- function(vol=sigma, spot=Spot) GBSPrice(PutCall='c', S=spot, K=VolData[[1]][1], T=T, r=r, b=b, sigma=vol)
+
+C2 <- function(vol=sigma, spot=Spot) GBSPrice(PutCall='c', S=spot, K=VolData[[2]][1], T=T, r=r, b=b, sigma=vol)
+
+C3 <- function(vol=sigma, spot=Spot) GBSPrice(PutCall='c', S=spot, K=VolData[[3]][1], T=T, r=r, b=b, sigma=vol)
+
+C <- c(C1, C2, C3)
+```
+
+1. Write a utility functions to compute the risk indicators,
+ all by finite difference:
+ 
+```{r, echo=TRUE}
+Vega <- function(f, vol, spot=Spot) {
+  # ????
+}
+
+Vanna <- function(f, vol, spot=Spot) {
+  # ????
+}
+  
+Volga <- function(f, vol) {
+# ????
+  }
+```
+
+Then, the calculation of vega for the three benchmark options may be performed by:
+
+```{r, echo=TRUE}
+B.vega <- sapply(1:3, function(i) Vega(C[[i]], sigma))
+```
+
+2. Compute vectors of vega, vanna, volga for the three hedge instruments
+
+<<echo=T>>=
+B.vega <- 0
+B.vanna <- 0
+B.volga <- 0
+@
+
+3. Choose a new strike for which we want to compute the implied volatility.
+
+
+4. Compute the risk indicators for a call option struck at that strike. 
+    
+5. Compute the Vanna-Volga price adjustment and the corresponding implied volatility.
+    
+
+6. Wrap the above logic in a function in order to
+interpolate/extrapolate the vol curve from $K=70$ to $K=130$
+
+# Pricing a digital call
+
+Recall that a digital call with strike $K$ pays one euro if $S_T \geq K$, and nothing otherwise.
+
+Using the logic of problem 1 to price a binary call, using the data of TP-Shimko. 
+
+Compare the results with those of Shimko's model.

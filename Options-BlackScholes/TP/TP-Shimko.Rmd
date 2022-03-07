@@ -1,0 +1,137 @@
+---
+title: "Options dans le cadre Black-Scholes"
+subtitle: 'TP-1: Modèle de Shimko'
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
+  pdf_document:
+    keep_tex: yes
+    fig_caption: yes
+    latex_engine: pdflatex
+  word_document: default
+geometry: margin=1in
+header-includes:
+- \usepackage[utf8]{inputenc}
+- \usepackage{amsmath}
+- \usepackage{amsfonts}
+- \usepackage{amssymb}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+In this problem set, you will use the following functions:
+
+GBSPrice: Price of a vanilla option:
+\[
+P = f(\text{PutCall}, S, K, T, r, b, \sigma)
+\]
+
+where:
+\begin{description}
+\item[$\text{PutCall}$] 'c' for a call, 'p' for a put
+\item[$b$] cost of carry: ridk free rate $r$ less dividend yield $d$
+\item[$r$] risk-free rate
+\end{description}
+
+```{r GBSPrice, echo=TRUE}
+GBSPrice <- function(PutCall, S, K, T, r, b, sigma) {
+  d1 <- (log(S/K) + (b+sigma^2/2)*T)/(sigma*sqrt(T))
+  d2 <- d1 - sigma*sqrt(T)
+
+  if(PutCall == 'c')  
+    px <- S*exp((b-r)*T)*pnorm(d1) - K*exp(-r*T)*pnorm(d2)
+  else
+    px <- K*exp(-r*T)*pnorm(-d2) - S*exp((b-r)*T)*pnorm(-d1)
+
+px
+}
+```
+
+GBSVega: Vega ($\frac{\partial P}{\partial \sigma}$) of a Vanilla option:
+
+```{r, echo=TRUE}
+GBSVega <- function(PutCall, S, K, T, r, b, sigma) {
+  d1 <- (log(S/K) + (b+sigma^2/2)*T)/(sigma*sqrt(T))
+  S*exp((b-r)*T) * dnorm(d1)
+}
+```
+
+# Implied dividend yield and risk-free rate
+
+We observe a set of call and put prices, maturity 60 days.
+
+The strikes of the options are:
+
+```{r, echo=TRUE}
+K <- c(325, 345, 360, 365, 375, 385, 390, 395, 400, 405, 410, 425)
+```
+
+The corresponding call prices are:
+
+```{r, echo=TRUE}
+C <- c(66.5, 46, 33, 27.75, 20.125, 13.5, 9.625, 7.25, 5.375, 3.375, 1.875, 0.25)
+```
+
+The corresponding put prices are:
+```{r, echo=TRUE}
+P <- c(0.3125, 0.875, 2, 2.625, 4.25, 7.125, 8.75, 11, 13.75, 17, 19.75, 34)
+```
+
+The spot is $S_0 = 390.02$. Using the Call-Put parity, estimate by linear regression the implied risk-free rate ($r$) and dividend yield ($d$).
+
+# Implied Volatility calculation
+
+
+1. Using the functions above, write a function that computes 
+the implied volatility of a Vanilla option. Let:
+\[
+g(\sigma) := P - f(\text{PutCall}, S, K, T, r, b, \sigma)
+\]
+
+where $P$ is the observed price of the option of interest.
+
+We look for the volatility $\sigma$ such that $g(\sigma) = 0$.
+
+The function should have the following signature:
+
+```{r, echo=TRUE}
+ImpliedVol <- function(p, TypeFlag, S, X, Time, r, b, sigma=NULL, maxiter=500, tol=1.e-5) {
+}
+```
+
+where:
+\begin{description}
+\item[$p$] price of the option
+\item[$sigma$] an optional initial value for the volatility
+\item[$maxiter$] an optional maximum number of iterations
+\item[$tol$] an optional tolerance for the error $|g(\sigma)|$.
+\end{description}
+
+2. Test the accuracy of your procedure on options that are deep in the money and deep out of the money, and report the results of your tests.
+
+3. Compute the implied volatility of the calls and puts in the data set.
+
+4. Fit a quadratic function to the call and put implied volatilities (one function for the calls, one for the puts), and plot actual vs. fitted data. Interpret the results.
+
+# Breeden-Litzenberger formula
+
+Compute the implied density of $S_T$ using the Breeden-Litzenberger formula. Estimate 
+\[
+\frac{\partial^2 f}{\partial K^2}
+\]
+by finite difference. Remember that now $\sigma$ is a function of strike. Plot the implied distribution and compare to the distribution implicit in the standard Black-Scholes model. Interpret your observations.
+
+
+# Shimko's Model
+
+Compute the implied distribution of $S_T$ using Shimko's model and the quadratic smile function estimated above.
+Plot this distribution and compare with the result of the Breeden-Litzenberger formula. Interpret your observations.
+
+# Pricing a digital call
+
+Recall that a digital call with strike $K$ pays one euro if $S_T \geq K$, and nothing otherwise.
+
+Using the implied density computed above, compute the price of a digital call by numerical integration.
+
+Perform this calculation for strikes ranging from 350 to 420. Compare with the price obtained using a log-normal distribution for $S_T$. Interpret your observations.
