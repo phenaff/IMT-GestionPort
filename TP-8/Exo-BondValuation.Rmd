@@ -1,0 +1,63 @@
+---
+title: "Exercice: Valorisation obligation"
+author: "P. Hénaff"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
+  pdf_document: default
+  slidy_presentation: default
+  beamer_presentation:
+    colortheme: dolphin
+    theme: Montpellier
+header-includes:
+- \usepackage[utf8]{inputenc}
+- \usepackage{graphicx}
+- \usepackage{subfig}
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
+- \usepackage{xcolor}
+bibliography: ../../library.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r, echo=TRUE}
+library(BondValuation)
+```
+
+# Veolia 4,625% 3/2017 (FR0011224963)
+
+www.boerse-frankfurt.de/bond
+
++ Date de calcul: 17/3/2021
++ Date de règlement/livraison: 18/3/2021
++ Date de maturité: 30/3/2027
++ Coupon: 4.625
++ Convention ACT/365
++ Prix (bid): 126.85
++ CC: 4.46
++ Rendement (bid): 0.1507 %
+
+## Coupon Couru
+
+
+
+## Rendement
+
