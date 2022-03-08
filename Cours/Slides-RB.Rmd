@@ -1,7 +1,7 @@
 ---
 title: "Risk Budgeting & Risk Parity"
 author: "P. Hénaff"
-date: "3/2021"
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
 output:
   beamer_presentation:
     colortheme: dolphin
@@ -162,7 +162,7 @@ Soit $\mathcal{RM}_p(w)$ une mesure cohérente du risque:
 + Impact de l'ajout $\Delta w_i$ de titres en portefeuille
 \begin{equation}
 \begin{aligned}
-\Delta \mathcal{RM}_p(w) &= \sum_i \Delta w_i \mathsf{CR}_i \\
+\Delta \mathcal{RM}_p(w) &= \sum_i \Delta w_i \mathsf{CMR}_i \\
 \end{aligned}
 \end{equation}
 
@@ -253,7 +253,7 @@ $$
 \mbox{CR}_i = b_i \mathcal{RM}_p(w)
 $$
 
-## Cas Paticulier: $\Sigma$ diagonal
+## Cas Particulier: Risk Parity avec $\Sigma$ diagonal
 
 $$
 \Omega = \sqrt{\mbox{diag}(\Sigma)}
@@ -307,12 +307,11 @@ barplotPortfolioRisk(w_all, Sigma)
 
 Solution numérique du problème "risk parity".
 
-Contribution au risque de l'actif $i$:
+Contribution au risque de l'actif $i$: $w_i \frac{(\Sigma w)_i}{w^T \Sigma w}$
 
-$$
-w_i \frac{(\Sigma w)_i}{w^T \Sigma w}
-$$
-Résoudre
+1.  Calculer les poids $w_i$ de la solution RP en résolvant un
+programme du type:
+
 $$
 \begin{aligned}
     \mbox{min}_w \ \ & f(w)  \\
@@ -323,5 +322,8 @@ $$
 $$
 
 + Formuler la fonction objectif $f(w)$
-+ Résoudre le problème avec le paquet NlcOptim
++ Résoudre le problème avec le librarie NlcOptim
 
+2.  Calculer la solution d'une seconde manière, en résolvant un système d'équations non-linéaires à l'aide de la librairie lneqslv.
+
+$$

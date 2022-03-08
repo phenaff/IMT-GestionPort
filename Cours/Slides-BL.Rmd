@@ -6,6 +6,7 @@ output:
   beamer_presentation:
     colortheme: dolphin
     theme: Montpellier
+    citation_package: biblatex
   slidy_presentation: default
 
 header-includes:

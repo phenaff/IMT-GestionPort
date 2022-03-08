@@ -129,15 +129,14 @@ Equilibre des flux:
 
 $$C(t) = (1+r) C(t-1) + \sum_i q_i F_i(t) - L(t)$$
 
-## Optimisation du cout ou du rendement moyen
+## Optimisation du cout
 
 \begin{align}
     \mbox{min} & \sum_i q_i P_i  \\
-    \mbox{max} & \sum_i q_i r_i \mbox{PV01}_i \\
     \mbox{s.t.} & \nonumber \\
-    & (1+r) C(t-1) + \sum_i q_i F_i(t) -C(t) = L(t) \label{eq:cf} \\
+    & (1+r) C(t-1) + \sum_i q_i F_i(t) -C(t) = L(t)\ \  \forall t \label{eq:cf} \\
     & q_i >= 0, i=1, \ldots, n \nonumber \\
-    & C(t) >= 0, t=1, \ldots, 5 \nonumber
+    & C(t) >= 0, t=1, \ldots, T \nonumber
   \end{align}
 
 
@@ -153,7 +152,7 @@ PV01_L & = & q_A PV01_A + q_B PV01_B
 ## Maximisation du rendement avec $N$ titres
 
 \begin{align}
-    \mbox{min} & \sum_i q_i r_i \mathcal{PV}01_i \\
+    \mbox{max} & \sum_i q_i r_i \mathcal{PV}01_i \\
     \mbox{s.t.} & \nonumber \\
     & \sum_i q_i \mathcal{PV}01_i = \mathcal{PV}01_L \\
     & \sum_i q_i P_i = P_L \\
