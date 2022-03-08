@@ -1,0 +1,47 @@
+---
+title: "Gestion de Portefeuille"
+subtitle: 'Exo Risk Parity'
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
+  pdf_document:
+  keep_tex: yes
+fig_caption: yes
+latex_engine: pdflatex
+word_document: default
+geometry: margin=1in
+header-includes:
+  - \usepackage[utf8]{inputenc}
+  - \usepackage{amsmath}
+  - \usepackage{amsfonts}
+  - \usepackage{amssymb}
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(NlcOptim)
+library(nleqslv)
+```
+
+# Risk parity portfolio
+
+To set all risk contributions identical, minimize the squared
+difference between the contributions of pairs of assets.
+
+$$
+\mbox{min}_w \sum_i (CR_i - CR_{i-1})^2
+$$
+
+```{r, echo=TRUE}
+sigma <- c(.1, .2, .3)
+rho <- matrix(c(1,.8, .7,.8, 1, .6, .7, .6, 1), nrow = 3)
+Sigma <- diag(sigma) %*% rho %*% diag(sigma)
+```
+
+# Using Newton's method
+
+Risk parity condition:
+
+$$
+w_i \frac{\partial \sigma_P}{\partial w_i} = w_j \frac{\partial  \sigma_P}{\partial w_j} = \lambda \ \ \forall\  i, j 
+$$
+Compute the weights by solving a set of non-linear equations. Use package nleqslv.
