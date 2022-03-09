@@ -212,7 +212,7 @@ CMR <- (Sigma %*% w) / sigma.p
 CR <- w * CMR
 CRR <- CR / sum(CR)
 df <- data.frame(sigma=sigma, w=w, CMR=CMR, CR=CR, CRR=CRR)
-names(df) <- c("$\\sigma_i$", "$w$", "CMR", "CR", "CRR")
+names(df) <- c("$\\sigma_i^2$", "$w$", "CMR", "CR", "CRR")
 kable(df, format="latex", booktabs=T, caption="Décomposition du risque", digits=3, escape=FALSE)
 ```
 
@@ -251,6 +251,12 @@ Bugeting:
 
 $$
 \mbox{CR}_i = b_i \mathcal{RM}_p(w)
+$$
+
+## Cas Particulier: Risk Parity avec $\Sigma$ diagonal
+
+$$
+\Omega = \sqrt{\mbox{diag}(\Sigma)}
 $$
 
 ## Cas Particulier: Risk Parity avec $\Sigma$ diagonal
