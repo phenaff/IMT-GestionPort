@@ -1,0 +1,108 @@
+---
+title: "Gestion de Portefeuille"
+subtitle: 'Exo Risk Parity'
+date: "Version: `r format(Sys.Date(), '%d %b %Y')`"
+output:
+  pdf_document:
+  keep_tex: yes
+fig_caption: yes
+latex_engine: pdflatex
+word_document: default
+geometry: margin=1in
+header-includes:
+  - \usepackage[utf8]{inputenc}
+  - \usepackage{amsmath}
+  - \usepackage{amsfonts}
+  - \usepackage{amssymb}
+  - \usepackage{booktabs}
+  
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(NlcOptim)
+library(nleqslv)
+```
+
+# Risk parity portfolio
+
+To set all risk contributions identical, minimize the squared
+difference between the contributions of pairs of assets.
+
+$$
+\mbox{min}_w \sum_i (CR_i - CR_{i-1})^2
+$$
+
+```{r, echo=TRUE}
+sigma <- c(.1, .2, .3)
+rho <- matrix(c(1,.8, .7,.8, 1, .6, .7, .6, 1), nrow = 3)
+Sigma <- diag(sigma) %*% rho %*% diag(sigma)
+
+obj <- function(w) {
+  w <- matrix(w, ncol=1)
+  Sw <- Sigma %*% w
+  MRC <- w * Sw
+  sum(diff(MRC)^2)*1000
+}
+
+Aeq <- matrix(rep(1,3), nrow=1)
+Beq <- 1
+lb <- rep(0,3)
+ub <- rep(1,3)
+
+w.0 <- rep(1/3,3)
+
+res.optim <- solnl(X=w.0, objfun=obj, Aeq=Aeq, Beq=Beq, lb=lb, ub=ub)
+```
+
+
+```{r, comment='', class.output='tex'}
+d = res.optim$par
+rownames(d) = c('$w_0$', '$w_1$', '$w_3$')
+names(d) = 'Weight'
+knitr::kable(d, format = 'latex', escape = FALSE, booktabs=T)
+```
+
+
+# Using Newton's method
+
+Risk parity condition:
+
+$$
+w_i \frac{\partial \sigma_P}{\partial w_i} = w_j \frac{\partial \sigma_P}{\partial w_j} = \lambda
+$$
+Let $1/w = [1/w_1, \ldots, 1/w_n]$, the above expression in matrix form is, dropping the denominator $w^T \Sigma w$ which is common to both sides of the equalities:
+
+$$
+\Sigma w = \lambda \times 1/w
+$$
+Define the vector-valued function
+
+$$
+F(w, \lambda) = 
+\begin{bmatrix}
+\Sigma w - \lambda \times 1/w \\
+1^T w - 1
+\end{bmatrix}
+$$
+We look for $w^*, \lambda^*$ such that $F(w^*, \lambda^*) = 0$.
+
+```{r, echo = TRUE}
+f.obj <- function(x) {
+  n <- length(x)
+  w <- matrix(x[1:(n-1)], ncol=1)
+  lambda <- x[n]
+  res.1 <- Sigma %*% w - lambda * 1/w
+  res.2 <- sum(w) - 1
+  as.vector(rbind(res.1, res.2))
+}
+
+res.newton = nleqslv(c(.3, .3, .3, .1), f.obj)
+```
+
+```{r, comment='', class.output='tex'}
+d = matrix(res.newton$x[1:3], ncol=1)
+rownames(d) = c('$w_0$', '$w_1$', '$w_3$')
+names(d) = 'Weight'
+knitr::kable(d, format = 'latex', escape = FALSE, booktabs=T)
+```
